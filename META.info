@@ -1,0 +1,7 @@
+{
+    "name"      : "OpenSSL",
+    "version"   : "*",
+    "description"   : "OpenSSL bindings",
+    "depends"   : [],
+    "source-url"    : "git://github.com/sergot/openssl.git"
+}
