@@ -1,5 +1,7 @@
 module OpenSSL;
 
+use NativeCall;
+
 class BIO_METHOD is repr('CStruct') {
     has int32 $.type;
     has Str $.name;
