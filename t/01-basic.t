@@ -1,7 +1,7 @@
 use OpenSSL;
 use Test;
 
-plan 7;
+plan 9;
 
 my $ssl = OpenSSL.new(:version(3), :client);
 
@@ -21,6 +21,6 @@ ok $ssl.connect, 'connect';
 
 ok $ssl.write("GET / HTTP/1.1\r\n\r\n"), 'write';
 
-ok $ssl.read(0), 'read';
+ok $ssl.read(1) == 0, 'read';
 
 ok $ssl.close, 'close';
