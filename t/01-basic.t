@@ -3,4 +3,5 @@ use Test;
 
 plan 1;
 
-ok OpenSSL::SSLv23_client_method(), 'SSLv23_client_method';
+my $ssl = OpenSSL.new;
+isa_ok $ssl, OpenSSL, 'new';
