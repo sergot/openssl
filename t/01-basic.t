@@ -1,7 +1,7 @@
 use OpenSSL;
 use Test;
 
-plan 3;
+plan 7;
 
 my $ssl = OpenSSL.new(:version(3), :client);
 
@@ -16,5 +16,6 @@ ok $ssl.set-fd(1), 'set-fd';
 $ssl.set-connect-state;
 is $ssl.ssl.server, 0, 'set-accept-state';
 
-say $ssl.connect();
 ok $ssl.connect, 'connect';
+
+ok $ssl.close, 'close';
