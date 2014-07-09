@@ -19,4 +19,8 @@ is $ssl.ssl.server, 0, 'set-accept-state';
 
 ok $ssl.connect, 'connect';
 
+ok $ssl.write("GET / HTTP/1.1\r\n\r\n"), 'write';
+
+ok $ssl.read(0), 'read';
+
 ok $ssl.close, 'close';
