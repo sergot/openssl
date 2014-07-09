@@ -1,7 +1,7 @@
 use OpenSSL;
 use Test;
 
-plan 1;
+plan 3;
 
 my $ssl = OpenSSL.new(:version(3));
 
