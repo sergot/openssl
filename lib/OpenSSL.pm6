@@ -2,6 +2,8 @@ class OpenSSL;
 
 use OpenSSL::SSL;
 
+use NativeCall;
+
 has $.ctx;
 has $.ssl;
 has $.client;
@@ -44,10 +46,26 @@ method accept {
     OpenSSL::SSL::SSL_accept($!ssl);
 }
 
-method write(Str $s, int32 $n) {
-    ...
+method write(Str $s) {
+    my int32 $n = $s.chars;
+    OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
 }
 
-method read(int32 $n) {
-    ...
+method read(Int $n) {
+    my int32 $count = $n;
+    my $carray = get_buf($count);
+    my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
+    return $carray[0..$read].join('');
+}
+
+sub get_buf(int32) returns CArray[uint8] is native('libbuf') { * }
+
+sub str-to-carray(Str $s) {
+    my @s = $s.split('');
+    my $c = CArray[uint8].new;
+    for 0 ..^ $s.chars -> $i {
+        my uint8 $elem = @s[$i].ord;
+        $c[$i] = $elem;
+    }
+    $c;
 }
