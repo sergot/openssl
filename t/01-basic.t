@@ -3,13 +3,18 @@ use Test;
 
 plan 3;
 
-my $ssl = OpenSSL.new(:version(3));
+my $ssl = OpenSSL.new(:version(3), :client);
 
 isa_ok $ssl, OpenSSL, 'new 1/3';
 is $ssl.ctx.method.version, 768, 'new 2/3';
 
-$ssl = OpenSSL.new;
+$ssl = OpenSSL.new(:client);
 is $ssl.ctx.method.version, 771, 'new 3/3';
 
-# connect
-ok $ssl.connect, 'connect 1/?';
+ok $ssl.set-fd(1), 'set-fd';
+
+$ssl.set-connect-state;
+is $ssl.ssl.server, 0, 'set-accept-state';
+
+say $ssl.connect();
+ok $ssl.connect, 'connect';
