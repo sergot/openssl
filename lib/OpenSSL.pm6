@@ -62,6 +62,14 @@ method read(Int $n, Bool :$bin = False) {
     return $bin ?? $buf !! $carray[0..$read]>>.chr.join('');
 }
 
+method shutdown {
+    OpenSSL::SSL::SSL_shutdown($.ssl);
+}
+
+method close {
+    self.shutdown;
+}
+
 sub get_buf(int32) returns CArray[uint8] is native('libbuf') { * }
 
 sub str-to-carray(Str $s) {
