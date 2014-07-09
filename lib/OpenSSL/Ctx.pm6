@@ -3,7 +3,7 @@ module OpenSSL::Ctx;
 use OpenSSL::Method;
 use NativeCall;
 
-our class SSL_CTX is repr('CStruct') {
+class SSL_CTX is repr('CStruct') {
     has OpenSSL::Method::SSL_METHOD $.method;
 }
 

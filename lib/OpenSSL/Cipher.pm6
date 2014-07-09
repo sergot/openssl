@@ -2,7 +2,7 @@ module OpenSSL::Cipher;
 
 use NativeCall;
 
-our class SSL_CIPHER is repr('CStruct') {
+class SSL_CIPHER is repr('CStruct') {
     has int32 $.valid;
     has Str $.name;
     has int $.id;

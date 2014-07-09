@@ -6,7 +6,7 @@ use OpenSSL::Ctx;
 
 use NativeCall;
 
-our class SSL is repr('CStruct') {
+class SSL is repr('CStruct') {
     has int32 $.version;
     has int32 $.type;
 
