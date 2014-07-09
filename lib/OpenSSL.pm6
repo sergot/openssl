@@ -70,7 +70,7 @@ method close {
     self.shutdown;
 }
 
-sub get_buf(int32) returns CArray[uint8] is native('libbuf') { * }
+sub get_buf(int32) returns CArray[uint8] is native('./libbuf') { * }
 
 sub str-to-carray(Str $s) {
     my @s = $s.split('');
