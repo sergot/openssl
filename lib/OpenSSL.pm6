@@ -40,7 +40,7 @@ method set-accept-state {
 }
 
 method connect {
-    OpenSSL::SSL:SSL_connect($!ssl);
+    OpenSSL::SSL::SSL_connect($!ssl);
 }
 
 method accept {
