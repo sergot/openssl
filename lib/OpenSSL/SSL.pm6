@@ -37,7 +37,7 @@ class SSL is repr('CStruct') {
 our sub SSL_library_init() is native('libssl')                                 { * }
 our sub SSL_load_error_strings() is native('libssl')                           { * }
 
-our sub SSL_new(OpenSSL::Ctx::SSL_CTX) returns SSL is native('libssl')                       { * }
+our sub SSL_new(OpenSSL::Ctx::SSL_CTX) returns SSL is native('libssl')         { * }
 our sub SSL_set_fd(SSL, int32) returns int32 is native('libssl')               { * }
 our sub SSL_shutdown(SSL) returns int32 is native('libssl')                    { * }
 our sub SSL_free(SSL) is native('libssl')                                      { * }
