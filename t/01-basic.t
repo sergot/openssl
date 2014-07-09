@@ -11,7 +11,8 @@ is $ssl.ctx.method.version, 768, 'new 2/3';
 $ssl = OpenSSL.new(:client);
 is $ssl.ctx.method.version, 771, 'new 3/3';
 
-ok $ssl.set-fd(1), 'set-fd';
+# wrong fd here
+ok $ssl.set-fd(111), 'set-fd';
 
 $ssl.set-connect-state;
 is $ssl.ssl.server, 0, 'set-accept-state';
