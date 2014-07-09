@@ -10,6 +10,7 @@ has $.client;
 
 method new(Bool :$client = False, Int :$version?) {
     OpenSSL::SSL::SSL_library_init();
+    OpenSSL::SSL::SSL_load_error_strings();
 
     my $method;
     if $version.defined {
@@ -51,11 +52,14 @@ method write(Str $s) {
     OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
 }
 
-method read(Int $n) {
+method read(Int $n, Bool :$bin = False) {
     my int32 $count = $n;
     my $carray = get_buf($count);
     my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
-    return $carray[0..$read].join('');
+
+    my buf8 $buf = $carray[0..$read] if $bin;
+
+    return $bin ?? $buf !! $carray[0..$read]>>.chr.join('');
 }
 
 sub get_buf(int32) returns CArray[uint8] is native('libbuf') { * }
