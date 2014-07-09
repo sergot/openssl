@@ -10,3 +10,6 @@ is $ssl.ctx.method.version, 768, 'new 2/3';
 
 $ssl = OpenSSL.new;
 is $ssl.ctx.method.version, 771, 'new 3/3';
+
+# connect
+ok $ssl.connect, 'connect 1/?';

@@ -23,3 +23,31 @@ method new(Bool :$client = False, Int :$version?) {
 
     self.bless(:$ctx, :$ssl, :$client);
 }
+
+method set-fd(int32 $fd) {
+    OpenSSL::SSL::SSL_set_fd($.ssl, $fd);
+}
+
+method set-connect-state {
+    OpenSSL::SSL::SSL_set_connect_state($.ssl);
+}
+
+method set-accept-state {
+    OpenSSL::SSL::SSL_set_accept_state($.ssl);
+}
+
+method connect {
+    OpenSSL::SSL:SSL_connect($.ssl);
+}
+
+method accept {
+    OpenSSL::SSL::SSL_accept($.ssl);
+}
+
+method write(Str $s, int32 $n) {
+    ...
+}
+
+method read(int32 $n) {
+    ...
+}
