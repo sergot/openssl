@@ -4,8 +4,8 @@ use OpenSSL::SSL;
 
 use NativeCall;
 
-has $.ctx;
-has $.ssl;
+has OpenSSL::Ctx::SSL_CTX $.ctx;
+has OpenSSL::SSL::SSL $.ssl;
 has $.client;
 
 method new(Bool :$client = False, Int :$version?) {
@@ -75,9 +75,10 @@ method ssl-free {
 }
 
 method close {
+    until self.shutdown {};
     self.ssl-free;
     self.ctx-free;
-    until self.shutdown { };
+    1;
 }
 
 sub get_buf(int32) returns CArray[uint8] is native('./libbuf') { * }
