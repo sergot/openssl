@@ -70,12 +70,12 @@ method ctx-free {
     OpenSSL::Ctx::SSL_CTX_free($!ctx);
 }
 
-method free {
+method ssl-free {
     OpenSSL::SSL::SSL_free($!ssl);
 }
 
 method close {
-    self.free;
+    self.ssl-free;
     self.ctx-free;
     until self.shutdown { };
 }
