@@ -71,7 +71,7 @@ method ctx-free {
 }
 
 method free {
-    OpenSSL::SSL::SSL_free($!ctx);
+    OpenSSL::SSL::SSL_free($!ssl);
 }
 
 method close {
