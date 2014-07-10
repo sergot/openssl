@@ -66,8 +66,16 @@ method shutdown {
     OpenSSL::SSL::SSL_shutdown($.ssl);
 }
 
+method ctx-free {
+    OpenSSL::Ctx::SSL_CTX_free($!ctx);
+}
+
+method free {
+    OpenSSL::SSL::SSL_free($!ctx);
+}
+
 method close {
-    self.shutdown;
+    until self.shutdown { };
 }
 
 sub get_buf(int32) returns CArray[uint8] is native('./libbuf') { * }
