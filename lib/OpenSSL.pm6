@@ -75,6 +75,8 @@ method free {
 }
 
 method close {
+    self.free;
+    self.ctx-free;
     until self.shutdown { };
 }
 
