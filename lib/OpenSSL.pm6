@@ -52,14 +52,14 @@ method write(Str $s) {
     OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
 }
 
-method read(Int $n, Bool :$bin = False) {
+method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
     my $carray = get_buf($count);
     my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
 
-    my buf8 $buf = $carray[0..$read] if $bin;
+    my $buf = buf8.new($carray[0..$read]) if $bin.defined;
 
-    return $bin ?? $buf !! $carray[0..$read]>>.chr.join('');
+    return $bin.defined ?? $buf !! $carray[0..$read]>>.chr.join('');
 }
 
 method shutdown {
