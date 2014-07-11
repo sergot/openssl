@@ -3,6 +3,7 @@ class OpenSSL;
 use OpenSSL::SSL;
 
 use NativeCall;
+use libbuf;
 
 has OpenSSL::Ctx::SSL_CTX $.ctx;
 has OpenSSL::SSL::SSL $.ssl;
@@ -81,7 +82,7 @@ method close {
     1;
 }
 
-sub get_buf(int32) returns CArray[uint8] is native('./libbuf') { * }
+sub get_buf(int32) returns CArray[uint8] is native(libbuf::library) { * }
 
 sub str-to-carray(Str $s) {
     my @s = $s.split('');
