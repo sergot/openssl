@@ -1,6 +1,7 @@
 {
     "name"      : "OpenSSL",
     "version"   : "0.0.1",
+    "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
     "depends"   : ["NativeCall", "LibraryMake"],
     "source-url"    : "git://github.com/sergot/openssl.git"
