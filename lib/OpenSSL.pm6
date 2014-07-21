@@ -58,9 +58,9 @@ method read(Int $n, Bool :$bin) {
     my $carray = get_buf($count);
     my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
 
-    my $buf = buf8.new($carray[0..($read - 1)]) if $bin.defined;
+    my $buf = buf8.new($carray[^$read]) if $bin.defined;
 
-    return $bin.defined ?? $buf !! $carray[0..($read - 1)]>>.chr.join('');
+    return $bin.defined ?? $buf !! $carray[^$read]>>.chr.join('');
 }
 
 method shutdown {
