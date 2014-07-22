@@ -9,7 +9,7 @@ isa_ok $ssl, OpenSSL, 'new 1/3';
 is $ssl.ctx.method.version, 768, 'new 2/3';
 
 $ssl = OpenSSL.new(:client);
-is $ssl.ctx.method.version, 771, 'new 3/3';
+is $ssl.ctx.method.version, 769, 'new 3/3';
 
 # wrong fd here
 ok $ssl.set-fd(111), 'set-fd';
