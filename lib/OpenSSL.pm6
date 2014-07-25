@@ -71,6 +71,26 @@ method read(Int $n, Bool :$bin) {
     return $bin.defined ?? $buf !! $carray[^$read]>>.chr.join;
 }
 
+method use-certificate-file(Str $file) {
+    # only PEM file so far : TODO : more file types
+    if OpenSSL::Ctx::SSL_use_certificate_file($!ctx, $file, 1) <= 0 {
+        die "Failed to set certificate file";
+    }
+}
+
+method use-privatekey-file(Str $file) {
+    # only PEM file so far : TODO : more file types
+    if OpenSSL::Ctx::SSL_CTX_use_PrivateKey_file($!ctx, $file, 1) <= 0 {
+        die "Failed to set PrivateKey file";
+    }
+}
+
+method check-private-key {
+    unless OpenSSL::Ctx::SSL_CTX_check_private_key($!ctx) {
+        die "Private key does not match the public certificate";
+    }
+}
+
 method shutdown {
     OpenSSL::SSL::SSL_shutdown($.ssl);
 }

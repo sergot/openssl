@@ -9,3 +9,7 @@ class SSL_CTX is repr('CStruct') {
 
 our sub SSL_CTX_new(OpenSSL::Method::SSL_METHOD) returns SSL_CTX is native('libssl') { * }
 our sub SSL_CTX_free(SSL_CTX) is native('libssl') { * }
+
+our sub SSL_CTX_use_certificate_file(SSL_CTX, Str, int32) returns int32 is native('libssl') { * }
+our sub SSL_CTX_use_PrivateKey_file(SSL_CTX, Str, int32) returns int32 is native('libssl') { * }
+our sub SSL_CTX_check_private_key(SSL_CTX) returns int32 is native('libssl') { * }
