@@ -73,7 +73,7 @@ method read(Int $n, Bool :$bin) {
 
 method use-certificate-file(Str $file) {
     # only PEM file so far : TODO : more file types
-    if OpenSSL::Ctx::SSL_use_certificate_file($!ctx, $file, 1) <= 0 {
+    if OpenSSL::Ctx::SSL_CTX_use_certificate_file($!ctx, $file, 1) <= 0 {
         die "Failed to set certificate file";
     }
 }
