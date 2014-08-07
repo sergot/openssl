@@ -122,3 +122,96 @@ sub str-to-carray(Str $s) {
     }
     $c;
 }
+
+=begin pod
+
+=head1 NAME
+
+OpenSSL - OpenSSL bindings
+
+=head1 SYNOPSIS
+
+    use OpenSSL:
+    my $openssl = OpenSSL.new;
+    $openssl.set-fd(123);
+    $openssl.write("GET / HTTP/1.1\r\n\r\n");
+
+=head1 DESCRIPTION
+
+TODO
+
+=head1 METHODS
+
+=head2 method new
+
+    method new(Bool :$client = False, Int :$version?)
+
+A constructor. Initializes OpenSSL library, sets method and context.
+
+=head2 method set-fd
+
+    method set-fd(OpenSSL:, int32 $fd)
+
+=head2 method set-connect-state
+
+    method set-connect-state(OpenSSL:)
+
+=head2 method set-accept-state
+
+    method set-accept-state(OpenSSL:)
+
+=head2 method connect
+
+    method connect(OpenSSL:)
+
+=head2 method accept
+
+    method accept(OpenSSL:)
+
+=head2 method write
+
+    method write(OpenSSL:, Str $s)
+
+=head2 method read
+
+    method read(OpenSSL:, Int $n, Bool :$bin)
+
+=head2 method
+
+    method use-certificate-file(OpenSSL:, Str $file)
+
+=head2 method
+
+    method use-privatekey-file(OpenSSL:, Str $file)
+
+=head2 method
+
+    method check-private-key(OpenSSL:)
+
+=head2 method
+
+    method shutdown(OpenSSL:)
+
+=head2 method
+
+    method ctx-free(OpenSSL:)
+
+=head2 method
+
+    method ssl-free(OpenSSL:)
+
+=head2 method
+
+    method close(OpenSSL:)
+
+=head1 SEE ALSO
+
+L<IO::Socket::SSL>
+
+=head1 AUTHOR
+
+Filip Sergot (sergot)
+Website: filip.sergot.pl
+Contact: filip (at) sergot.pl
+
+=end pod
