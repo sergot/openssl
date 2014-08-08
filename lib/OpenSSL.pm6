@@ -134,7 +134,7 @@ OpenSSL - OpenSSL bindings
     use OpenSSL;
     my $openssl = OpenSSL.new;
     $openssl.set-fd(123);
-    $openssl.write("GET / HTTP/1.1\r\n\r\n");
+    $openssl.write("GET / HTTP/1.1\r\nHost: somehost\r\n\r\n");
 
 =head1 DESCRIPTION
 
