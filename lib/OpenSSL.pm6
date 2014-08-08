@@ -138,7 +138,7 @@ OpenSSL - OpenSSL bindings
 
 =head1 DESCRIPTION
 
-TODO
+A module which provides OpenSSL bindings, making us able to set up a TLS/SSL connection.
 
 =head1 METHODS
 
@@ -152,57 +152,101 @@ A constructor. Initializes OpenSSL library, sets method and context.
 
     method set-fd(OpenSSL:, int32 $fd)
 
+Assings connection's file descriptor (file handle) $fd to the SSL object.
+
+To get the $fd we should use C to set up the connection. (See L<NativeCall>)
+I hope we will be able to use Perl 6's IO::Socket module instead of
+connecting through C soon-ish.
+
 =head2 method set-connect-state
 
     method set-connect-state(OpenSSL:)
+
+Sets SSL object to connect (client) state.
+
+Use it when you want to connect to SSL servers.
 
 =head2 method set-accept-state
 
     method set-accept-state(OpenSSL:)
 
+Sets SSL object to accept (server) state.
+
+Use it when you want to provide an SSL server.
+
 =head2 method connect
 
     method connect(OpenSSL:)
+
+Connects to the server using $fd (passed using .set-fd).
+
+Does all the SSL stuff like handshaking.
 
 =head2 method accept
 
     method accept(OpenSSL:)
 
+Accepts new client connection.
+
+Does all the SSL stuff like handshaking.
+
 =head2 method write
 
     method write(OpenSSL:, Str $s)
+
+Sends $s to the other side (server/client).
 
 =head2 method read
 
     method read(OpenSSL:, Int $n, Bool :$bin)
 
-=head2 method
+Reads $n bytes from the other side (server/client).
+
+Bool :$bin if we want it to return Buf instead of Str.
+
+=head2 method use-certificate-file
 
     method use-certificate-file(OpenSSL:, Str $file)
 
-=head2 method
+Assings a certificate (from file) to the SSL object.
+
+=head2 method use-privatekey-file
 
     method use-privatekey-file(OpenSSL:, Str $file)
 
-=head2 method
+Assings a private key (from file) to the SSL object.
+
+=head2 method check-private-key
 
     method check-private-key(OpenSSL:)
 
-=head2 method
+Checks if private key is valid.
+
+=head2 method shutdown
 
     method shutdown(OpenSSL:)
 
-=head2 method
+Turns off the connection.
+
+=head2 method ctx-free
 
     method ctx-free(OpenSSL:)
 
-=head2 method
+Frees C's SSL_CTX struct.
+
+=head2 method ssl-free
 
     method ssl-free(OpenSSL:)
 
-=head2 method
+Frees C's SSL struct.
+
+=head2 method close
 
     method close(OpenSSL:)
+
+Closes the connection.
+
+Unlike .shutdown it calls ssl-free, ctx-free, and then it shutdowns.
 
 =head1 SEE ALSO
 
