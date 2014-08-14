@@ -252,10 +252,4 @@ Unlike .shutdown it calls ssl-free, ctx-free, and then it shutdowns.
 
 L<IO::Socket::SSL>
 
-=head1 AUTHOR
-
-Filip Sergot (sergot)
-Website: filip.sergot.pl
-Contact: filip (at) sergot.pl
-
 =end pod
