@@ -1,6 +1,7 @@
 class OpenSSL;
 
 use OpenSSL::SSL;
+use OpenSSL::Err;
 
 use NativeCall;
 use libbuf;
@@ -65,6 +66,15 @@ method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
     my $carray = get_buf($count);
     my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
+
+    unless $read > 0 {
+        my $e = OpenSSL::Err::ERR_get_error();
+        repeat {
+            say "err code: $e";
+            say OpenSSL::Err::ERR_error_string($e);
+            $e = OpenSSL::Err::ERR_get_error();
+        } while $e != 0 && $e != 4294967296;
+    }
 
     my $buf = buf8.new($carray[^$read]) if $bin.defined;
 
