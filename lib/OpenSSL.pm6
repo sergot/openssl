@@ -120,7 +120,7 @@ method close {
     1;
 }
 
-sub get_buf(int32) returns CArray[uint8] { * }
+sub get_buf(int32) returns CArray[uint8] { ... }
 trait_mod:<is>(&get_buf, :native(libbuf::library));
 
 sub str-to-carray(Str $s) {
