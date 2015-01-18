@@ -9,6 +9,13 @@ has OpenSSL::Ctx::SSL_CTX $.ctx;
 has OpenSSL::SSL::SSL $.ssl;
 has $.client;
 
+has $.using-bio = False;
+has $.net-write;
+has $.net-read;
+
+has $.net-bio;
+has $.internal-bio;
+
 method new(Bool :$client = False, Int :$version?) {
     OpenSSL::SSL::SSL_library_init();
     OpenSSL::SSL::SSL_load_error_strings();
@@ -40,6 +47,47 @@ method set-fd(int32 $fd) {
     OpenSSL::SSL::SSL_set_fd($!ssl, $fd);
 }
 
+method set-socket(IO::Socket $s) {
+    # see http://wiki.openssl.org/index.php/Manual:BIO_s_bio(3)
+    
+    $.using-bio = True;
+    $.net-bio = OpaquePointer;
+    $.internal-bio = OpaquePointer;
+    
+    BIO_new_bio_pair($.internal-bio, 0, $.net-bio, 0);
+    SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
+    
+    $.net-write = -> $buf {
+        $s.write($buf);
+    }
+    
+    $.net-read = -> $n? {
+        $s.read($n);
+    }
+}
+
+method bio-write {
+    # if we're handling the network in P6, dump everything we can
+    if $using-bio {
+        my CArray[uint8] $cbuf;
+        $cbuf[1024] = 0;
+        while (my $len = BIO_read($.net-bio, $cbuf, 1024)) > 0 {
+            my $buf = carray_to_buf($cbuf, $len);
+            $.net-write.($buf);
+        }
+    }
+}
+method bio-read {
+    # if we're handling the network in P6, read everything we can
+    # XXX TODO: will fail horribly and break everything if the BIO buffer fills up
+    # XXX TODO: so we need to possibly add our own buffer as well?
+    if $using-bio {
+        my $buf = $.net-read.();
+        my $cbuf = buf_to_carray($buf);
+        BIO_write($.net-bio, $cbuf, $buf.bytes);
+    }
+}
+
 method set-connect-state {
     OpenSSL::SSL::SSL_set_connect_state($!ssl);
 }
@@ -50,23 +98,32 @@ method set-accept-state {
 
 method connect {
     OpenSSL::SSL::SSL_connect($!ssl);
+    # TODO: handle WANT_READ / WANT_WRITE
 }
 
 method accept {
     OpenSSL::SSL::SSL_accept($!ssl);
+    # TODO: handle WANT_READ / WANT_WRITE
 }
 
 method write(Str $s) {
     my int32 $n = $s.chars;
     OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
+    
+    # TODO: handle WANT_READ / WANT_WRITE
+    
+    $.bio-write;
 }
 
 method read(Int $n, Bool :$bin) {
+    $.bio-read;
+    
     my int32 $count = $n;
     my $carray = CArray[uint8].new;
     $carray[$count-1] = 0;
     my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
 
+    # TODO: handle WANT_READ / WANT_WRITE
     unless $read > 0 {
         my $e = OpenSSL::Err::ERR_get_error();
         while $e != 0 && $e != 4294967296 {
