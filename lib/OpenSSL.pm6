@@ -69,11 +69,11 @@ method read(Int $n, Bool :$bin) {
 
     unless $read > 0 {
         my $e = OpenSSL::Err::ERR_get_error();
-        repeat {
+        while $e != 0 && $e != 4294967296 {
             say "err code: $e";
             say OpenSSL::Err::ERR_error_string($e);
             $e = OpenSSL::Err::ERR_get_error();
-        } while $e != 0 && $e != 4294967296;
+        }
     }
 
     my $buf = buf8.new($carray[^$read]) if $bin.defined;
