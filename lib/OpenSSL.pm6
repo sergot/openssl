@@ -11,6 +11,7 @@ has OpenSSL::SSL::SSL $.ssl;
 has $.client;
 
 has $.using-bio = False;
+has $.bio-read-buf = buf8.new;
 has $.net-write;
 has $.net-read;
 
@@ -57,7 +58,12 @@ method set-socket(IO::Socket $s) {
     my $i-ptr = CArray[OpaquePointer].new;
     $i-ptr[0] = OpaquePointer;
     
-    OpenSSL::Bio::BIO_new_bio_pair($.internal-bio, 0, $.net-bio, 0);
+    my $ret = OpenSSL::Bio::BIO_new_bio_pair($n-ptr, 0, $i-ptr, 0);
+    if $ret == 0 {
+        my $e = OpenSSL::Err::ERR_get_error();
+        say "err code: $e";
+        say OpenSSL::Err::ERR_error_string($e);
+    }
     $!net-bio = $n-ptr[0];
     $!internal-bio = $i-ptr[0];
     OpenSSL::SSL::SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
@@ -66,15 +72,16 @@ method set-socket(IO::Socket $s) {
         $s.write($buf);
     }
     
-    $!net-read = -> $n? {
-        $s.read($n);
+    $!net-read = -> $n = Inf {
+        $s.recv($n, :bin);
     }
+    0;
 }
 
 method bio-write {
     # if we're handling the network in P6, dump everything we can
     if $.using-bio {
-        my CArray[uint8] $cbuf;
+        my $cbuf = CArray[uint8].new;
         $cbuf[1024] = 0;
         while (my $len = OpenSSL::Bio::BIO_read($.net-bio, $cbuf, 1024)) > 0 {
             my $buf = carray-to-buf($cbuf, $len);
@@ -84,31 +91,30 @@ method bio-write {
 }
 method bio-read {
     # if we're handling the network in P6, read everything we can
-    # XXX TODO: will fail horribly and break everything if the BIO buffer fills up
-    # XXX TODO: so we need to possibly add our own buffer as well?
     if $.using-bio {
-        my $buf = $.net-read.();
-        my $cbuf = buf-to-carray($buf);
-        OpenSSL::Bio::BIO_write($.net-bio, $cbuf, $buf.bytes);
+        if $!bio-read-buf.bytes == 0 {
+            $!bio-read-buf = $.net-read.();
+        }
+        my $cbuf = buf-to-carray($!bio-read-buf);
+        my $bytes = OpenSSL::Bio::BIO_write($.net-bio, $cbuf, $!bio-read-buf.bytes);
+        $!bio-read-buf = $!bio-read-buf.subbuf($bytes);
     }
 }
-method handle-error {
-    my $e = OpenSSL::Err::ERR_get_error();
+method handle-error($code) {
+    my $e = OpenSSL::SSL::SSL_get_error($!ssl, $code);
     return 0 unless $e;
     my $try-recover = -1;
-    repeat {
-        if $e == 2 && $.using-bio { # SLL_ERROR_WANT_READ
-            $.bio-read;
-            $try-recover = 1;
-        } elsif $e == 3 && $.using-bio { # SSL_ERROR_WANT_WRITE
-            $.bio-write;
-            $try-recover = 1;
-        } else {
-            say "err code: $e";
-            say OpenSSL::Err::ERR_error_string($e);
-        }
-        $e = OpenSSL::Err::ERR_get_error();
-    } while $e != 0 && $e != 4294967296;
+    if $e == 2 && $.using-bio { # SSL_ERROR_WANT_READ
+        $.bio-write;
+        $.bio-read;
+        $try-recover = 1;
+    } elsif $e == 3 && $.using-bio { # SSL_ERROR_WANT_WRITE
+        $.bio-write;
+        $try-recover = 1;
+    } else {
+        # we don't know what to do with it - pass the error up the stack
+        $try-recover = -1;
+    }
     
     $try-recover;
 }
@@ -127,7 +133,7 @@ method connect {
     loop {
         $ret = OpenSSL::SSL::SSL_connect($!ssl);
         
-        my $e = $.handle-error;
+        my $e = $.handle-error($ret);
         last unless $e > 0;
     }
     
@@ -140,7 +146,7 @@ method accept {
     loop {
         $ret = OpenSSL::SSL::SSL_accept($!ssl);
         
-        my $e = $.handle-error;
+        my $e = $.handle-error($ret);
         last unless $e > 0;
     }
     
@@ -154,7 +160,7 @@ method write(Str $s) {
     loop {
         $ret = OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
         
-        my $e = $.handle-error;
+        my $e = $.handle-error($ret);
         last unless $e > 0;
     }
     
@@ -164,8 +170,6 @@ method write(Str $s) {
 }
 
 method read(Int $n, Bool :$bin) {
-    $.bio-read;
-    
     my int32 $count = $n;
     my $carray = CArray[uint8].new;
     $carray[$count-1] = 0;
@@ -173,7 +177,8 @@ method read(Int $n, Bool :$bin) {
     loop {
         $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
         
-        my $e = $.handle-error;
+        my $e = 0;
+        $e = $.handle-error($read) if $read < 0;
         last unless $e > 0;
     }
 
