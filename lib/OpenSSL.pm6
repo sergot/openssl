@@ -4,7 +4,6 @@ use OpenSSL::SSL;
 use OpenSSL::Err;
 
 use NativeCall;
-use libbuf;
 
 has OpenSSL::Ctx::SSL_CTX $.ctx;
 has OpenSSL::SSL::SSL $.ssl;
@@ -64,7 +63,8 @@ method write(Str $s) {
 
 method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
-    my $carray = get_buf($count);
+    my $carray = CArray[uint8].new;
+    $carray[$count-1] = 0;
     my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
 
     unless $read > 0 {
@@ -119,9 +119,6 @@ method close {
     self.ctx-free;
     1;
 }
-
-sub get_buf(int32) returns CArray[uint8] { ... }
-trait_mod:<is>(&get_buf, :native(libbuf::library));
 
 sub str-to-carray(Str $s) {
     my @s = $s.split('');
