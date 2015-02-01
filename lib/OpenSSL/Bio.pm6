@@ -40,5 +40,6 @@ class BIO is repr('CStruct') {
 }
 
 our sub BIO_new_bio_pair(CArray[OpaquePointer], int, CArray[OpaquePointer], int --> int32) is native($lib) { ... }
+our sub BIO_free(OpaquePointer) is native($lib) { ... }
 our sub BIO_read(OpaquePointer, CArray[uint8], int32 --> int32) is native($lib) { ... }
 our sub BIO_write(OpaquePointer, CArray[uint8], int32 --> int32) is native($lib) { ... }

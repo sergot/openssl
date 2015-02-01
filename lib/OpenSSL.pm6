@@ -217,6 +217,10 @@ method ctx-free {
 
 method ssl-free {
     OpenSSL::SSL::SSL_free($!ssl);
+    if $.using-bio {
+        # $.internal-bio is freed by the SSL_free call
+        OpenSSL::Bio::BIO_free($.net-bio);
+    }
 }
 
 method close {
