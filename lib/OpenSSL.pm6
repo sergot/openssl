@@ -1,6 +1,7 @@
 class OpenSSL;
 
 use OpenSSL::SSL;
+use OpenSSL::Bio;
 use OpenSSL::Err;
 
 use NativeCall;
@@ -50,18 +51,22 @@ method set-fd(int32 $fd) {
 method set-socket(IO::Socket $s) {
     # see http://wiki.openssl.org/index.php/Manual:BIO_s_bio(3)
     
-    $.using-bio = True;
-    $.net-bio = OpaquePointer;
-    $.internal-bio = OpaquePointer;
+    $!using-bio = True;
+    my $n-ptr = CArray[OpaquePointer].new;
+    $n-ptr[0] = OpaquePointer;
+    my $i-ptr = CArray[OpaquePointer].new;
+    $i-ptr[0] = OpaquePointer;
     
-    BIO_new_bio_pair($.internal-bio, 0, $.net-bio, 0);
-    SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
+    OpenSSL::Bio::BIO_new_bio_pair($.internal-bio, 0, $.net-bio, 0);
+    $!net-bio = $n-ptr[0];
+    $!internal-bio = $i-ptr[0];
+    OpenSSL::SSL::SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
     
-    $.net-write = -> $buf {
+    $!net-write = -> $buf {
         $s.write($buf);
     }
     
-    $.net-read = -> $n? {
+    $!net-read = -> $n? {
         $s.read($n);
     }
 }
@@ -71,8 +76,8 @@ method bio-write {
     if $.using-bio {
         my CArray[uint8] $cbuf;
         $cbuf[1024] = 0;
-        while (my $len = BIO_read($.net-bio, $cbuf, 1024)) > 0 {
-            my $buf = carray_to_buf($cbuf, $len);
+        while (my $len = OpenSSL::Bio::BIO_read($.net-bio, $cbuf, 1024)) > 0 {
+            my $buf = carray-to-buf($cbuf, $len);
             $.net-write.($buf);
         }
     }
@@ -83,8 +88,8 @@ method bio-read {
     # XXX TODO: so we need to possibly add our own buffer as well?
     if $.using-bio {
         my $buf = $.net-read.();
-        my $cbuf = buf_to_carray($buf);
-        BIO_write($.net-bio, $cbuf, $buf.bytes);
+        my $cbuf = buf-to-carray($buf);
+        OpenSSL::Bio::BIO_write($.net-bio, $cbuf, $buf.bytes);
     }
 }
 method handle-error {
@@ -224,6 +229,19 @@ sub str-to-carray(Str $s) {
         $c[$i] = $elem;
     }
     $c;
+}
+
+sub buf-to-carray($buf) {
+    my $carray = CArray[uint8].new;
+    my $i = 0;
+    for $buf.list {
+        $carray[$i++] = $_;
+    }
+    $carray;
+}
+
+sub carray-to-buf($carray, $len) {
+    buf8.new($carray[^$len]);
 }
 
 =begin pod

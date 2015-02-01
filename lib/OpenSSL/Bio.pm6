@@ -1,5 +1,15 @@
 module OpenSSL::Bio;
 
+my Str $lib;
+BEGIN {
+    if $*VM.config<dll> ~~ /dll/ {
+        # we're on windows, different library name
+        $lib = 'ssleay32.dll';
+    } else {
+        $lib = 'libssl';
+    }
+}
+
 use NativeCall;
 
 class BIO_METHOD is repr('CStruct') {
@@ -28,3 +38,7 @@ class BIO is repr('CStruct') {
 
     # ex_data ?
 }
+
+our sub BIO_new_bio_pair(CArray[OpaquePointer], int64, CArray[OpaquePointer], int64 --> int32) is native($lib) { ... }
+our sub BIO_read(OpaquePointer, CArray[uint8], int32 --> int32) is native($lib) { ... }
+our sub BIO_write(OpaquePointer, CArray[uint8], int32 --> int32) is native($lib) { ... }

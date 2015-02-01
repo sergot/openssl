@@ -59,3 +59,4 @@ our sub SSL_write(SSL, CArray[uint8], int32) returns int32 is native($lib) { ...
 our sub SSL_set_connect_state(SSL) is native($lib)                         { ... }
 our sub SSL_set_accept_state(SSL) is native($lib)                          { ... }
 
+our sub SSL_set_bio(SSL, OpaquePointer, OpaquePointer) returns int32 is native($lib) { ... }
