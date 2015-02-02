@@ -1,6 +1,7 @@
 class OpenSSL;
 
 use OpenSSL::SSL;
+use OpenSSL::Bio;
 use OpenSSL::Err;
 
 use NativeCall;
@@ -8,6 +9,14 @@ use NativeCall;
 has OpenSSL::Ctx::SSL_CTX $.ctx;
 has OpenSSL::SSL::SSL $.ssl;
 has $.client;
+
+has $.using-bio = False;
+has $.bio-read-buf = buf8.new;
+has $.net-write;
+has $.net-read;
+
+has $.net-bio;
+has $.internal-bio;
 
 method new(Bool :$client = False, Int :$version?) {
     OpenSSL::SSL::SSL_library_init();
@@ -40,6 +49,76 @@ method set-fd(int32 $fd) {
     OpenSSL::SSL::SSL_set_fd($!ssl, $fd);
 }
 
+method set-socket(IO::Socket $s) {
+    # see http://wiki.openssl.org/index.php/Manual:BIO_s_bio(3)
+    
+    $!using-bio = True;
+    my $n-ptr = CArray[OpaquePointer].new;
+    $n-ptr[0] = OpaquePointer;
+    my $i-ptr = CArray[OpaquePointer].new;
+    $i-ptr[0] = OpaquePointer;
+    
+    my $ret = OpenSSL::Bio::BIO_new_bio_pair($n-ptr, 0, $i-ptr, 0);
+    if $ret == 0 {
+        my $e = OpenSSL::Err::ERR_get_error();
+        say "err code: $e";
+        say OpenSSL::Err::ERR_error_string($e);
+    }
+    $!net-bio = $n-ptr[0];
+    $!internal-bio = $i-ptr[0];
+    OpenSSL::SSL::SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
+    
+    $!net-write = -> $buf {
+        $s.write($buf);
+    }
+    
+    $!net-read = -> $n = Inf {
+        $s.recv($n, :bin);
+    }
+    0;
+}
+
+method bio-write {
+    # if we're handling the network in P6, dump everything we can
+    if $.using-bio {
+        my $cbuf = CArray[uint8].new;
+        $cbuf[1024] = 0;
+        while (my $len = OpenSSL::Bio::BIO_read($.net-bio, $cbuf, 1024)) > 0 {
+            my $buf = carray-to-buf($cbuf, $len);
+            $.net-write.($buf);
+        }
+    }
+}
+method bio-read {
+    # if we're handling the network in P6, read everything we can
+    if $.using-bio {
+        if $!bio-read-buf.bytes == 0 {
+            $!bio-read-buf = $.net-read.();
+        }
+        my $cbuf = buf-to-carray($!bio-read-buf);
+        my $bytes = OpenSSL::Bio::BIO_write($.net-bio, $cbuf, $!bio-read-buf.bytes);
+        $!bio-read-buf = $!bio-read-buf.subbuf($bytes);
+    }
+}
+method handle-error($code) {
+    my $e = OpenSSL::SSL::SSL_get_error($!ssl, $code);
+    return 0 unless $e;
+    my $try-recover = -1;
+    if $e == 2 && $.using-bio { # SSL_ERROR_WANT_READ
+        $.bio-write;
+        $.bio-read;
+        $try-recover = 1;
+    } elsif $e == 3 && $.using-bio { # SSL_ERROR_WANT_WRITE
+        $.bio-write;
+        $try-recover = 1;
+    } else {
+        # we don't know what to do with it - pass the error up the stack
+        $try-recover = -1;
+    }
+    
+    $try-recover;
+}
+
 method set-connect-state {
     OpenSSL::SSL::SSL_set_connect_state($!ssl);
 }
@@ -49,36 +128,63 @@ method set-accept-state {
 }
 
 method connect {
-    OpenSSL::SSL::SSL_connect($!ssl);
+    my $ret;
+    
+    loop {
+        $ret = OpenSSL::SSL::SSL_connect($!ssl);
+        
+        my $e = $.handle-error($ret);
+        last unless $e > 0;
+    }
+    
+    $ret;
 }
 
 method accept {
-    OpenSSL::SSL::SSL_accept($!ssl);
+    my $ret;
+    
+    loop {
+        $ret = OpenSSL::SSL::SSL_accept($!ssl);
+        
+        my $e = $.handle-error($ret);
+        last unless $e > 0;
+    }
+    
+    $ret;
 }
 
 method write(Str $s) {
     my int32 $n = $s.chars;
-    OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
+    my $ret;
+    
+    loop {
+        $ret = OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
+        
+        my $e = $.handle-error($ret);
+        last unless $e > 0;
+    }
+    
+    $.bio-write;
+    
+    $ret;
 }
 
 method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
     my $carray = CArray[uint8].new;
     $carray[$count-1] = 0;
-    my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
-
-    unless $read > 0 {
-        my $e = OpenSSL::Err::ERR_get_error();
-        while $e != 0 && $e != 4294967296 {
-            say "err code: $e";
-            say OpenSSL::Err::ERR_error_string($e);
-            $e = OpenSSL::Err::ERR_get_error();
-        }
+    my $read;
+    loop {
+        $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
+        
+        my $e = 0;
+        $e = $.handle-error($read) if $read < 0;
+        last unless $e > 0;
     }
 
     my $buf = buf8.new($carray[^$read]) if $bin.defined;
 
-    return $bin.defined ?? $buf !! $carray[^$read]>>.chr.join;
+    return $bin ?? $buf !! $carray[^$read]>>.chr.join;
 }
 
 method use-certificate-file(Str $file) {
@@ -111,6 +217,10 @@ method ctx-free {
 
 method ssl-free {
     OpenSSL::SSL::SSL_free($!ssl);
+    if $.using-bio {
+        # $.internal-bio is freed by the SSL_free call
+        OpenSSL::Bio::BIO_free($.net-bio);
+    }
 }
 
 method close {
@@ -128,6 +238,19 @@ sub str-to-carray(Str $s) {
         $c[$i] = $elem;
     }
     $c;
+}
+
+sub buf-to-carray($buf) {
+    my $carray = CArray[uint8].new;
+    my $i = 0;
+    for $buf.list {
+        $carray[$i++] = $_;
+    }
+    $carray;
+}
+
+sub carray-to-buf($carray, $len) {
+    buf8.new($carray[^$len]);
 }
 
 =begin pod
