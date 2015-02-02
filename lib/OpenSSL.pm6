@@ -184,7 +184,7 @@ method read(Int $n, Bool :$bin) {
 
     my $buf = buf8.new($carray[^$read]) if $bin.defined;
 
-    return $bin.defined ?? $buf !! $carray[^$read]>>.chr.join;
+    return $bin ?? $buf !! $carray[^$read]>>.chr.join;
 }
 
 method use-certificate-file(Str $file) {
