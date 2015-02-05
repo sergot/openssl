@@ -81,10 +81,10 @@ method set-socket(IO::Socket $s) {
 method bio-write {
     # if we're handling the network in P6, dump everything we can
     if $.using-bio {
-        my $cbuf = CArray[uint8].new;
+        my $cbuf = buf8.new;
         $cbuf[1024] = 0;
         while (my $len = OpenSSL::Bio::BIO_read($.net-bio, $cbuf, 1024)) > 0 {
-            my $buf = carray-to-buf($cbuf, $len);
+            my $buf = $cbuf.subbuf(0, $len);
             $.net-write.($buf);
         }
     }
@@ -153,12 +153,16 @@ method accept {
     $ret;
 }
 
-method write(Str $s) {
-    my int32 $n = $s.chars;
+multi method write(Str $s) {
+    $.write($s.encode);
+}
+
+multi method write(Blob $b) {
+    my int32 $n = $b.bytes;
     my $ret;
     
     loop {
-        $ret = OpenSSL::SSL::SSL_write($!ssl, str-to-carray($s), $n);
+        $ret = OpenSSL::SSL::SSL_write($!ssl, $b, $n);
         
         my $e = $.handle-error($ret);
         last unless $e > 0;
@@ -171,7 +175,7 @@ method write(Str $s) {
 
 method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
-    my $carray = CArray[uint8].new;
+    my $carray = buf8.new;
     $carray[$count-1] = 0;
     my $read;
     loop {
@@ -182,9 +186,9 @@ method read(Int $n, Bool :$bin) {
         last unless $e > 0;
     }
 
-    my $buf = buf8.new($carray[^$read]) if $bin.defined;
+    my $buf = $carray.subbuf(0, $read);
 
-    return $bin ?? $buf !! $carray[^$read]>>.chr.join;
+    return $bin ?? $buf !! $buf.decode;
 }
 
 method use-certificate-file(Str $file) {
@@ -228,29 +232,6 @@ method close {
     self.ssl-free;
     self.ctx-free;
     1;
-}
-
-sub str-to-carray(Str $s) {
-    my @s = $s.split('');
-    my $c = CArray[uint8].new;
-    for 0 ..^ $s.chars -> $i {
-        my uint8 $elem = @s[$i].ord;
-        $c[$i] = $elem;
-    }
-    $c;
-}
-
-sub buf-to-carray($buf) {
-    my $carray = CArray[uint8].new;
-    my $i = 0;
-    for $buf.list {
-        $carray[$i++] = $_;
-    }
-    $carray;
-}
-
-sub carray-to-buf($carray, $len) {
-    buf8.new($carray[^$len]);
 }
 
 =begin pod

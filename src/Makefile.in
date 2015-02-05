@@ -1,7 +1,0 @@
-all: %DESTDIR%/libbuf%SO%
-
-%DESTDIR%/libbuf%SO%: libbuf%O%
-	    %LD% %LDSHARED% %LDFLAGS% %LIBS% %LDOUT%%DESTDIR%/libbuf%SO% libbuf%O%
-
-libbuf%O%: libbuf.c
-	    %CC% -c %CCSHARED% %CCFLAGS% %CCOUT%libbuf%O% libbuf.c
