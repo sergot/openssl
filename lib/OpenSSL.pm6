@@ -95,8 +95,7 @@ method bio-read {
         if $!bio-read-buf.bytes == 0 {
             $!bio-read-buf = $.net-read.();
         }
-        my $cbuf = buf-to-carray($!bio-read-buf);
-        my $bytes = OpenSSL::Bio::BIO_write($.net-bio, $cbuf, $!bio-read-buf.bytes);
+        my $bytes = OpenSSL::Bio::BIO_write($.net-bio, $!bio-read-buf, $!bio-read-buf.bytes);
         $!bio-read-buf = $!bio-read-buf.subbuf($bytes);
     }
 }
@@ -176,7 +175,7 @@ multi method write(Blob $b) {
 method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
     my $carray = buf8.new;
-    $carray[$count-1] = 0;
+    $carray[$n-1] = 0;
     my $read;
     loop {
         $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count);
@@ -186,7 +185,8 @@ method read(Int $n, Bool :$bin) {
         last unless $e > 0;
     }
 
-    my $buf = $carray.subbuf(0, $read);
+    my $buf = buf8.new;
+    $buf = $carray.subbuf(0, $read) if $read >= 0;
 
     return $bin ?? $buf !! $buf.decode;
 }
