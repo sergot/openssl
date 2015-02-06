@@ -180,10 +180,12 @@ method read(Int $n, Bool :$bin) {
     my $carray = buf8.new;
     $carray[$n-1] = 0;
     my $total-read = 0;
+    my $buf = buf8.new;
     loop {
         my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count - $total-read);
         
         $total-read += $read if $read > 0;
+        $buf ~= $carray.subbuf(0, $read) if $read > 0;
         
         last if $total-read >= $n;
         
@@ -191,9 +193,6 @@ method read(Int $n, Bool :$bin) {
         $e = $.handle-error($read) if $read < 0;
         last unless $e > 0;
     }
-
-    my $buf = buf8.new;
-    $buf = $carray.subbuf(0, $total-read) if $total-read >= 0;
 
     return $bin ?? $buf !! $buf.decode;
 }
