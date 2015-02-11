@@ -194,7 +194,7 @@ method read(Int $n, Bool :$bin) {
         last unless $e > 0;
     }
 
-    return $bin ?? $buf !! $buf.unpack('A*');
+    return $bin ?? $buf !! $buf.decode('latin-1');
 }
 
 method use-certificate-file(Str $file) {
