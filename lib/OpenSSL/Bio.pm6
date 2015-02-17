@@ -43,3 +43,4 @@ our sub BIO_new_bio_pair(CArray[OpaquePointer], int, CArray[OpaquePointer], int 
 our sub BIO_free(OpaquePointer) is native($lib) { ... }
 our sub BIO_read(OpaquePointer, Blob, int --> int32) is native($lib) { ... }
 our sub BIO_write(OpaquePointer, Blob, int --> int32) is native($lib) { ... }
+our sub BIO_new_mem_buf(Blob, int --> OpaquePointer) is native($lib) { ... }
