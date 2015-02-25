@@ -17,6 +17,11 @@ class BIO_METHOD is repr('CStruct') {
     has Str $.name;
 }
 
+class CRYPTO_EX_DATA is repr('CStruct') {
+    has OpaquePointer $.st;
+    has int32 $.dummy;
+}
+
 class BIO is repr('CStruct') {
     has BIO_METHOD $.method;
     # some functions ?
@@ -33,14 +38,16 @@ class BIO is repr('CStruct') {
     has BIO $.prev_bio;
 
     has int32 $.references;
-    has int $.num_read;
-    has int $.num_write;
+    has long $.num_read;
+    has long $.num_write;
 
-    # ex_data ?
+    # inlined struct CRYPTO_EX_DATA
+    has OpaquePointer $.st;
+    has int32 $.dummy;
 }
 
-our sub BIO_new_bio_pair(CArray[OpaquePointer], int, CArray[OpaquePointer], int --> int32) is native($lib) { ... }
+our sub BIO_new_bio_pair(CArray[OpaquePointer], long, CArray[OpaquePointer], long --> int32) is native($lib) { ... }
 our sub BIO_free(OpaquePointer) is native($lib) { ... }
-our sub BIO_read(OpaquePointer, Blob, int --> int32) is native($lib) { ... }
-our sub BIO_write(OpaquePointer, Blob, int --> int32) is native($lib) { ... }
-our sub BIO_new_mem_buf(Blob, int --> OpaquePointer) is native($lib) { ... }
+our sub BIO_read(OpaquePointer, Blob, long --> int32) is native($lib) { ... }
+our sub BIO_write(OpaquePointer, Blob, long --> int32) is native($lib) { ... }
+our sub BIO_new_mem_buf(Blob, long --> OpaquePointer) is native($lib) { ... }
