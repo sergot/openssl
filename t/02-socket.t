@@ -3,25 +3,43 @@ use Test;
 
 plan 4;
 
-my $ssl = OpenSSL.new(:version(3), :client);
-my $s = IO::Socket::INET.new(:host('google.com'), :port(443));
-is $ssl.set-socket($s), 0, 'set-socket success';
-$ssl.set-connect-state;
-is $ssl.connect, 1, 'connect success';
-is $ssl.write("GET / HTTP/1.1\r\nHost:www.google.com\r\nConnection:close\r\n\r\n"), 57, 'write success';
+check(fetch('google.com', '/'));
 
-#slurp it all up
-my $result = '';
-loop {
-    my $tmp = $ssl.read(1024);
-    if $tmp.chars {
-        $result ~= $tmp;
-    } else {
-        last;
+sub check($result) {
+    if $result ~~ /200 \s+ OK/ {
+        pass 'Got good response';
+    }
+    elsif $result ~~ /302 \s+ Found/ && $result ~~ /^^'Location:' \s* $<location>=[\N+]/ {
+        diag 'Got a redirect, following...';
+        subtest {
+            check(fetch('google.com', $<location>));
+        }, 'Got good response after redirection';
+    }
+    else {
+        fail 'Got good response';
     }
 }
 
-$ssl.close;
-$s.close;
+sub fetch($host, $url) {
+    my $ssl = OpenSSL.new(:version(3), :client);
+    my $s = IO::Socket::INET.new(:$host, :port(443));
+    is $ssl.set-socket($s), 0, 'set-socket success';
+    $ssl.set-connect-state;
+    is $ssl.connect, 1, 'connect success';
+    is $ssl.write("GET $url HTTP/1.1\r\nHost:www.$host\r\nConnection:close\r\n\r\n"), 46 + $url.chars + $host.chars, 'write success';
 
-ok $result ~~ /200 \s+ OK/, 'Got good response';
+    #slurp it all up
+    my $result = '';
+    loop {
+        my $tmp = $ssl.read(1024);
+        if $tmp.chars {
+            $result ~= $tmp;
+        } else {
+            last;
+        }
+    }
+
+    $ssl.close;
+    $s.close;
+    $result
+}
