@@ -48,25 +48,43 @@ class OpenSSL::RSAKey {
         }
     }
 
-    method sign(Blob $blob) {
+    method sign(Blob $blob, :$sha1, :$sha256) {
         die "Must have private key to sign" unless $.private;
-        my $sha1 = sha1($blob);
+        my $hashed;
+        my $type;
+        if $sha256 {
+            $hashed = sha256($blob);
+            $type   = 672; # NID_sha256
+        }
+        else {
+            $hashed = sha1($blob);
+            $type   = 64; # NID_sha1
+        }
 
         my $sig = buf8.new;
         my $slen = CArray[int32].new;
         $slen[0] = OpenSSL::RSA::RSA_size($.rsa);
         $sig[$slen[0]-1] = 0;
-        my $ret = OpenSSL::RSA::RSA_sign(64, $sha1, $sha1.bytes, $sig, $slen, $.rsa);
+        my $ret = OpenSSL::RSA::RSA_sign($type, $hashed, $hashed.bytes, $sig, $slen, $.rsa);
 
         die "Failed to sign" unless $ret == 1;
 
         return $sig.subbuf(0, $slen[0]);
     }
 
-    method verify(Blob $blob, Blob $sig) {
-        my $sha1 = sha1($blob);
+    method verify(Blob $blob, Blob $sig, :$sha1, :$sha256) {
+        my $hashed;
+        my $type;
+        if $sha256 {
+            $hashed = sha256($blob);
+            $type   = 672; # NID_sha256
+        }
+        else {
+            $hashed = sha1($blob);
+            $type   = 64; # NID_sha1
+        }
 
-        my $ret = OpenSSL::RSA::RSA_verify(64, $sha1, $sha1.bytes, $sig, $sig.bytes, $.rsa);
+        my $ret = OpenSSL::RSA::RSA_verify($type, $hashed, $hashed.bytes, $sig, $sig.bytes, $.rsa);
 
         return True if $ret == 1;
         return False;

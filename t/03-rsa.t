@@ -1,7 +1,7 @@
 use v6;
 use Test;
 
-plan 4;
+plan 8;
 
 use OpenSSL::RSATools;
 
@@ -17,3 +17,10 @@ ok $signature ~~ Blob && $signature.bytes, 'Signed data using RSAKey';
 
 ok $rsa.verify($data.encode, $signature), 'Can verify correctly';
 ok !$rsa.verify("asdf".encode, $signature), 'verify fails on different data';
+
+my $sha256-signature = $rsa.sign($data.encode, :sha256);
+ok $sha256-signature ~~ Blob && $sha256-signature.bytes, 'Signed data using RSAKey (sha256)';
+ok $sha256-signature ne $signature, 'Different signature than sha1';
+
+ok $rsa.verify($data.encode, $sha256-signature, :sha256), 'Can verify correctly (sha256)';
+ok !$rsa.verify("asdf".encode, $sha256-signature, :sha256), 'verify fails on different data (sha256)';
