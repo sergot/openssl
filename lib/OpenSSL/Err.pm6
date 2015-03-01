@@ -12,6 +12,6 @@ BEGIN {
 
 use NativeCall;
 
-our sub ERR_error_string(Int $e, Str $ret = Str) returns Str is native($lib) { ... };
+our sub ERR_error_string(int32 $e, Str $ret) returns Str is native($lib) { ... };
 
 our sub ERR_get_error() returns Int is native($lib) { ... };
