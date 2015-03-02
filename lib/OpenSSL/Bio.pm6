@@ -2,7 +2,7 @@ module OpenSSL::Bio;
 
 my Str $lib;
 BEGIN {
-    if $*VM.config<dll> ~~ /dll/ {
+    if $*DISTRO.is-win {
         # we're on windows, different library name
         $lib = 'libeay32.dll';
     } else {

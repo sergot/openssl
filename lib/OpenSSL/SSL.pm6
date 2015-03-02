@@ -2,7 +2,7 @@ module OpenSSL::SSL;
 
 my Str $lib;
 BEGIN {
-    if $*VM.config<dll> ~~ /dll/ {
+    if $*DISTRO.is-win {
         # we're on windows, different library name
         $lib = 'ssleay32.dll';
     } else {
