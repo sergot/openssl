@@ -33,10 +33,15 @@ class OpenSSL::RSAKey {
         }
         elsif $x509-pem {
             my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($x509-pem.encode, $x509-pem.encode.bytes);
+
             my $x509 = OpenSSL::PEM::PEM_read_bio_X509($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
             OpenSSL::Bio::BIO_free($bio-buf);
+            die "Unable to read key" unless defined($x509);
+
             my $evp-key = OpenSSL::X509::X509_get_pubkey($x509);
             OpenSSL::X509::X509_free($x509);
+            die "Unable to read key" unless defined($evp-key);
+
             my $rsa = OpenSSL::X509::EVP_PKEY_get1_RSA($evp-key);
             OpenSSL::X509::EVP_PKEY_free($evp-key);
             die "Unable to read key" unless defined($rsa);
