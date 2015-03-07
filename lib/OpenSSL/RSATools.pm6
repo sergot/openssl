@@ -43,8 +43,8 @@ class OpenSSL::RSAKey {
             OpenSSL::X509::X509_free($x509);
             die "Unable to read key" unless defined($evp-key);
 
-            my $rsa = OpenSSL::X509::EVP_PKEY_get1_RSA($evp-key);
-            OpenSSL::X509::EVP_PKEY_free($evp-key);
+            my $rsa = OpenSSL::EVP::EVP_PKEY_get1_RSA($evp-key);
+            OpenSSL::EVP::EVP_PKEY_free($evp-key);
             die "Unable to read key" unless defined($rsa);
 
             return self.bless(:$rsa, :private(False));
