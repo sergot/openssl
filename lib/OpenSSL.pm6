@@ -3,6 +3,7 @@ class OpenSSL;
 use OpenSSL::SSL;
 use OpenSSL::Bio;
 use OpenSSL::Err;
+use OpenSSL::EVP;
 
 use NativeCall;
 
@@ -19,6 +20,13 @@ has $.net-bio;
 has $.internal-bio;
 
 method new(Bool :$client = False, Int :$version?) {
+
+    # make a simple call to ensure libeay32.dll is loaded before ssleay32.dll (on windows)
+    #
+    # if we're using our bundled .dll files, and we try to load ssleay32.dll first, LoadLibrary
+    # can't find the required libeay32.dll anywhere in the path, and so fails to load the dll
+    OpenSSL::EVP::EVP_aes_128_cbc();
+
     OpenSSL::SSL::SSL_library_init();
     OpenSSL::SSL::SSL_load_error_strings();
 
@@ -51,13 +59,13 @@ method set-fd(int32 $fd) {
 
 method set-socket(IO::Socket $s) {
     # see http://wiki.openssl.org/index.php/Manual:BIO_s_bio(3)
-    
+
     $!using-bio = True;
     my $n-ptr = CArray[OpaquePointer].new;
     $n-ptr[0] = OpaquePointer;
     my $i-ptr = CArray[OpaquePointer].new;
     $i-ptr[0] = OpaquePointer;
-    
+
     my $ret = OpenSSL::Bio::BIO_new_bio_pair($n-ptr, 0, $i-ptr, 0);
     if $ret == 0 {
         my $e = OpenSSL::Err::ERR_get_error();
@@ -67,11 +75,11 @@ method set-socket(IO::Socket $s) {
     $!net-bio = $n-ptr[0];
     $!internal-bio = $i-ptr[0];
     OpenSSL::SSL::SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
-    
+
     $!net-write = -> $buf {
         $s.write($buf);
     }
-    
+
     $!net-read = -> $n = Inf {
         $s.recv($n, :bin);
     }
@@ -117,7 +125,7 @@ method handle-error($code) {
         # we don't know what to do with it - pass the error up the stack
         $try-recover = -1;
     }
-    
+
     $try-recover;
 }
 
@@ -131,27 +139,27 @@ method set-accept-state {
 
 method connect {
     my $ret;
-    
+
     loop {
         $ret = OpenSSL::SSL::SSL_connect($!ssl);
-        
+
         my $e = $.handle-error($ret);
         last unless $e > 0;
     }
-    
+
     $ret;
 }
 
 method accept {
     my $ret;
-    
+
     loop {
         $ret = OpenSSL::SSL::SSL_accept($!ssl);
-        
+
         my $e = $.handle-error($ret);
         last unless $e > 0;
     }
-    
+
     $ret;
 }
 
@@ -162,16 +170,16 @@ multi method write(Str $s) {
 multi method write(Blob $b) {
     my int32 $n = $b.bytes;
     my $ret;
-    
+
     loop {
         $ret = OpenSSL::SSL::SSL_write($!ssl, $b, $n);
-        
+
         my $e = $.handle-error($ret);
         last unless $e > 0;
     }
-    
+
     $.bio-write;
-    
+
     $ret;
 }
 
@@ -183,12 +191,12 @@ method read(Int $n, Bool :$bin) {
     my $buf = buf8.new;
     loop {
         my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count - $total-read);
-        
+
         $total-read += $read if $read > 0;
         $buf ~= $carray.subbuf(0, $read) if $read > 0;
-        
+
         last if $total-read >= $n;
-        
+
         my $e = 0;
         $e = $.handle-error($read) if $read < 0;
         last unless $e > 0;
