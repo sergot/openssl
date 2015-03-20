@@ -1,17 +1,8 @@
 module OpenSSL::Err;
 
-my Str $lib;
-BEGIN {
-    if $*VM.config<dll> ~~ /dll/ {
-        # we're on windows, different library name
-        $lib = 'libeay32.dll';
-    } else {
-        $lib = 'libssl';
-    }
-}
-
+use OpenSSL::NativeLib;
 use NativeCall;
 
-our sub ERR_error_string(int32 $e, Str $ret) returns Str is native($lib) { ... };
+our sub ERR_error_string(int32 $e, Str $ret) returns Str is native(&gen-lib) { ... };
 
-our sub ERR_get_error() returns Int is native($lib) { ... };
+our sub ERR_get_error() returns Int is native(&gen-lib) { ... };

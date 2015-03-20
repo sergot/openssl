@@ -1,15 +1,6 @@
 module OpenSSL::SSL;
 
-my Str $lib;
-BEGIN {
-    if $*DISTRO.is-win {
-        # we're on windows, different library name
-        $lib = 'ssleay32.dll';
-    } else {
-        $lib = 'libssl';
-    }
-}
-
+use OpenSSL::NativeLib;
 use OpenSSL::Bio;
 use OpenSSL::Method;
 use OpenSSL::Ctx;
@@ -44,19 +35,19 @@ class SSL is repr('CStruct') {
     has int32 $.rstate;
 }
 
-our sub SSL_library_init() is native($lib)                                 { ... }
-our sub SSL_load_error_strings() is native($lib)                           { ... }
+our sub SSL_library_init() is native(&ssl-lib)                                 { ... }
+our sub SSL_load_error_strings() is native(&ssl-lib)                           { ... }
 
-our sub SSL_new(OpenSSL::Ctx::SSL_CTX) returns SSL is native($lib)         { ... }
-our sub SSL_set_fd(SSL, int32) returns int32 is native($lib)               { ... }
-our sub SSL_shutdown(SSL) returns int32 is native($lib)                    { ... }
-our sub SSL_free(SSL) is native($lib)                                      { ... }
-our sub SSL_get_error(SSL, int32) returns int32 is native($lib)            { ... }
-our sub SSL_accept(SSL) returns int32 is native($lib)                      { ... }
-our sub SSL_connect(SSL) returns int32 is native($lib)                     { ... }
-our sub SSL_read(SSL, Blob, int32) returns int32 is native($lib)  { ... }
-our sub SSL_write(SSL, Blob, int32) returns int32 is native($lib) { ... }
-our sub SSL_set_connect_state(SSL) is native($lib)                         { ... }
-our sub SSL_set_accept_state(SSL) is native($lib)                          { ... }
+our sub SSL_new(OpenSSL::Ctx::SSL_CTX) returns SSL is native(&ssl-lib)         { ... }
+our sub SSL_set_fd(SSL, int32) returns int32 is native(&ssl-lib)               { ... }
+our sub SSL_shutdown(SSL) returns int32 is native(&ssl-lib)                    { ... }
+our sub SSL_free(SSL) is native(&ssl-lib)                                      { ... }
+our sub SSL_get_error(SSL, int32) returns int32 is native(&ssl-lib)            { ... }
+our sub SSL_accept(SSL) returns int32 is native(&ssl-lib)                      { ... }
+our sub SSL_connect(SSL) returns int32 is native(&ssl-lib)                     { ... }
+our sub SSL_read(SSL, Blob, int32) returns int32 is native(&ssl-lib)  { ... }
+our sub SSL_write(SSL, Blob, int32) returns int32 is native(&ssl-lib) { ... }
+our sub SSL_set_connect_state(SSL) is native(&ssl-lib)                         { ... }
+our sub SSL_set_accept_state(SSL) is native(&ssl-lib)                          { ... }
 
-our sub SSL_set_bio(SSL, OpaquePointer, OpaquePointer) returns int32 is native($lib) { ... }
+our sub SSL_set_bio(SSL, OpaquePointer, OpaquePointer) returns int32 is native(&ssl-lib) { ... }

@@ -1,15 +1,6 @@
 module OpenSSL::Bio;
 
-my Str $lib;
-BEGIN {
-    if $*DISTRO.is-win {
-        # we're on windows, different library name
-        $lib = 'libeay32.dll';
-    } else {
-        $lib = 'libssl';
-    }
-}
-
+use OpenSSL::NativeLib;
 use NativeCall;
 
 class BIO_METHOD is repr('CStruct') {
@@ -46,8 +37,8 @@ class BIO is repr('CStruct') {
     has int32 $.dummy;
 }
 
-our sub BIO_new_bio_pair(CArray[OpaquePointer], long, CArray[OpaquePointer], long --> int32) is native($lib) { ... }
-our sub BIO_free(OpaquePointer) is native($lib) { ... }
-our sub BIO_read(OpaquePointer, Blob, long --> int32) is native($lib) { ... }
-our sub BIO_write(OpaquePointer, Blob, long --> int32) is native($lib) { ... }
-our sub BIO_new_mem_buf(Blob, long --> OpaquePointer) is native($lib) { ... }
+our sub BIO_new_bio_pair(CArray[OpaquePointer], long, CArray[OpaquePointer], long --> int32) is native(&gen-lib) { ... }
+our sub BIO_free(OpaquePointer) is native(&gen-lib) { ... }
+our sub BIO_read(OpaquePointer, Blob, long --> int32) is native(&gen-lib) { ... }
+our sub BIO_write(OpaquePointer, Blob, long --> int32) is native(&gen-lib) { ... }
+our sub BIO_new_mem_buf(Blob, long --> OpaquePointer) is native(&gen-lib) { ... }

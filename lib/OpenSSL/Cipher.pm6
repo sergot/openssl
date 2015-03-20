@@ -18,4 +18,3 @@ class SSL_CIPHER is repr('CStruct') {
     has int32 $.strength_bits;
     has int32 $.alg_bits;
 }
-
