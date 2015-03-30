@@ -5,18 +5,21 @@
     "description"   : "OpenSSL bindings",
     "depends"   : ["Digest"],
     "provides" : {
-        "OpenSSL"           : "lib/OpenSSL.pm6",
-        "OpenSSL::Bio"      : "lib/OpenSSL/Bio.pm6",
-        "OpenSSL::Cipher"   : "lib/OpenSSL/Cipher.pm6",
-        "OpenSSL::Ctx"      : "lib/OpenSSL/Ctx.pm6",
-        "OpenSSL::Err"      : "lib/OpenSSL/Err.pm6",
-        "OpenSSL::Method"   : "lib/OpenSSL/Method.pm6",
-        "OpenSSL::PEM"      : "lib/OpenSSL/PEM.pm6",
-        "OpenSSL::RSA"      : "lib/OpenSSL/RSA.pm6",
-        "OpenSSL::RSATools" : "lib/OpenSSL/RSATools.pm6",
-        "OpenSSL::Session"  : "lib/OpenSSL/Session.pm6",
-        "OpenSSL::SSL"      : "lib/OpenSSL/SSL.pm6",
-        "OpenSSL::X509"     : "lib/OpenSSL/X509.pm6"
+        "OpenSSL"             : "lib/OpenSSL.pm6",
+        "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
+        "OpenSSL::Cipher"     : "lib/OpenSSL/Cipher.pm6",
+        "OpenSSL::CryptTools" : "lib/OpenSSL/CryptTools.pm6",
+        "OpenSSL::Ctx"        : "lib/OpenSSL/Ctx.pm6",
+        "OpenSSL::Err"        : "lib/OpenSSL/Err.pm6",
+        "OpenSSL::EVP"        : "lib/OpenSSL/EVP.pm6",
+        "OpenSSL::Method"     : "lib/OpenSSL/Method.pm6",
+        "OpenSSL::NativeLib"  : "lib/OpenSSL/NativeLib.pm6",
+        "OpenSSL::PEM"        : "lib/OpenSSL/PEM.pm6",
+        "OpenSSL::RSA"        : "lib/OpenSSL/RSA.pm6",
+        "OpenSSL::RSATools"   : "lib/OpenSSL/RSATools.pm6",
+        "OpenSSL::Session"    : "lib/OpenSSL/Session.pm6",
+        "OpenSSL::SSL"        : "lib/OpenSSL/SSL.pm6",
+        "OpenSSL::X509"       : "lib/OpenSSL/X509.pm6"
     },
     "source-url"    : "git://github.com/sergot/openssl.git"
 }
