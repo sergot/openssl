@@ -1,4 +1,4 @@
-module OpenSSL::Session;
+unit module OpenSSL::Session;
 
 use NativeCall;
 

@@ -1,4 +1,4 @@
-module OpenSSL::Bio;
+unit module OpenSSL::Bio;
 
 use OpenSSL::NativeLib;
 use NativeCall;

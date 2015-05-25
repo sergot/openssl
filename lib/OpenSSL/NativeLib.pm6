@@ -1,4 +1,4 @@
-module OpenSSL::NativeLib;
+unit module OpenSSL::NativeLib;
 
 sub ssl-lib is export {
     state $lib;

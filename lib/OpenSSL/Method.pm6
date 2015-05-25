@@ -1,4 +1,4 @@
-module OpenSSL::Method;
+unit module OpenSSL::Method;
 
 use OpenSSL::NativeLib;
 use NativeCall;

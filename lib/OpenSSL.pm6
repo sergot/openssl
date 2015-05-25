@@ -1,4 +1,4 @@
-class OpenSSL;
+unit class OpenSSL;
 
 use OpenSSL::SSL;
 use OpenSSL::Bio;

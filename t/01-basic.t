@@ -5,7 +5,7 @@ plan 9;
 
 my $ssl = OpenSSL.new(:version(3), :client);
 
-isa_ok $ssl, OpenSSL, 'new 1/3';
+isa-ok $ssl, OpenSSL, 'new 1/3';
 is $ssl.ctx.method.version, 768, 'new 2/3';
 
 $ssl = OpenSSL.new(:client);

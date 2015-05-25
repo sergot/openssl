@@ -1,4 +1,4 @@
-module OpenSSL::Cipher;
+unit module OpenSSL::Cipher;
 
 use NativeCall;
 

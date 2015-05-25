@@ -1,7 +1,7 @@
 use OpenSSL::EVP;
 use NativeCall;
 
-module OpenSSL::CryptTools;
+unit module OpenSSL::CryptTools;
 
 our sub encrypt(Blob $plaintext, :$key, :$iv, :$aes256!) is export {
     my $ctx = OpenSSL::EVP::EVP_CIPHER_CTX_new();

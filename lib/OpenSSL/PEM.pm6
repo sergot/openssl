@@ -1,4 +1,4 @@
-module OpenSSL::PEM;
+unit module OpenSSL::PEM;
 
 use OpenSSL::NativeLib;
 use NativeCall;

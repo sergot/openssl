@@ -1,4 +1,4 @@
-module OpenSSL::SSL;
+unit module OpenSSL::SSL;
 
 use OpenSSL::NativeLib;
 use OpenSSL::Bio;

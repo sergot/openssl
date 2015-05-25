@@ -1,4 +1,4 @@
-module OpenSSL::RSA;
+unit module OpenSSL::RSA;
 
 use OpenSSL::NativeLib;
 use NativeCall;

@@ -1,4 +1,4 @@
-module OpenSSL::X509;
+unit module OpenSSL::X509;
 
 use OpenSSL::NativeLib;
 use NativeCall;

@@ -1,4 +1,4 @@
-module OpenSSL::Err;
+unit module OpenSSL::Err;
 
 use OpenSSL::NativeLib;
 use NativeCall;

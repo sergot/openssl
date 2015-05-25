@@ -1,4 +1,4 @@
-module OpenSSL::Ctx;
+unit module OpenSSL::Ctx;
 
 use OpenSSL::NativeLib;
 use OpenSSL::Method;

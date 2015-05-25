@@ -1,4 +1,4 @@
-module OpenSSL::EVP;
+unit module OpenSSL::EVP;
 
 use OpenSSL::NativeLib;
 use NativeCall;
