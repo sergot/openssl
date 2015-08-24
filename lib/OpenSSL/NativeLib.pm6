@@ -29,7 +29,8 @@ sub gen-lib is export {
 sub find-bundled($lib is copy) {
     # if we can't find one, assume there's a system install
     my $base = "lib/OpenSSL/$lib";
-    for @*INC {
+    for @*INC -> $_ is copy {
+        $_ = CompUnitRepo.new($_);
         if my @files = ($_.files($base) || $_.files("blib/$base")) {
             my $files = @files[0]<files>;
             my $tmp = $files{$base} || $files{"blib/$base"};
