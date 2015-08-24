@@ -28,10 +28,15 @@ sub gen-lib is export {
 
 sub find-bundled($lib is copy) {
     # if we can't find one, assume there's a system install
-    my $base = "lib/OpenSSL/$lib";
+    my $b = "OpenSSL/$lib";
     for @*INC -> $_ is copy {
         $_ = CompUnitRepo.new($_);
-        if my @files = ($_.files($base) || $_.files("blib/$base")) {
+        my $base = $b;
+        if $_ ~~ CompUnitRepo::Local::File {
+            # CUR::Local::File has screwed up .files semantics
+            $base = $_.IO ~ '\\' ~ $base;
+        }
+        if my @files = ($_.files($base) || $_.files("lib/$base") || $_.files("blib/$base")) {
             my $files = @files[0]<files>;
             my $tmp = $files{$base} || $files{"blib/$base"};
 
