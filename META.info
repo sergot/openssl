@@ -3,7 +3,7 @@
     "version"   : "0.0.1",
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
-    "depends"   : ["Digest"],
+    "depends"   : ["Digest","LibraryMake"],
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
         "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
