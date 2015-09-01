@@ -4,6 +4,7 @@
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
     "depends"   : ["Digest","LibraryMake"],
+    "build-depends" : ["Shell::Command","panda"],
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
         "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
