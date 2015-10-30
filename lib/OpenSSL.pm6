@@ -199,7 +199,7 @@ method read(Int $n, Bool :$bin) {
 
         my $e = 0;
         $e = $.handle-error($read) if $read < 0;
-        last unless $e > 0;
+        last if $e <= 0 || $total-read >= $n;
     }
 
     return $bin ?? $buf !! $buf.decode('latin-1');
