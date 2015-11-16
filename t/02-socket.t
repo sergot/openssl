@@ -21,7 +21,7 @@ sub check($result) {
 }
 
 sub fetch($host, $url) {
-    my $ssl = OpenSSL.new(:version(3), :client);
+    my $ssl = OpenSSL.new(:client);
     my $s = IO::Socket::INET.new(:$host, :port(443));
     is $ssl.set-socket($s), 0, 'set-socket success';
     $ssl.set-connect-state;
