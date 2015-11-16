@@ -39,13 +39,22 @@ method new(Bool :$client = False, Int :$version?) {
             when 3 {
                 $method = ($client ?? OpenSSL::Method::SSLv3_client_method() !! OpenSSL::Method::SSLv3_server_method());
             }
-            default {
+            when 1 {
                 $method = ($client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method());
+            }
+            when 1.1 {
+                $method = ($client ?? OpenSSL::Method::TLSv1_1_client_method() !! OpenSSL::Method::TLSv1_1_server_method());
+            }
+            when 1.2 {
+                $method = ($client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method());
+            }
+            default {
+                $method = ($client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method());
             }
         }
     }
     else {
-        $method = $client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method();
+        $method = $client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method();
     }
     my $ctx     = OpenSSL::Ctx::SSL_CTX_new( $method );
     my $ssl     = OpenSSL::SSL::SSL_new( $ctx );
