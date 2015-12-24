@@ -1,6 +1,8 @@
 use v6;
 use Test;
 
+use experimental :pack;
+
 plan 6;
 
 use OpenSSL::CryptTools;
