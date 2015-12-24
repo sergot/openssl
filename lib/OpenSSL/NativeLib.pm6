@@ -8,7 +8,7 @@ sub ssl-lib is export {
             # try to find a bundled .dll
             $lib = Find::Bundled.find('ssleay32.dll', 'OpenSSL', :return-original, :keep-filename);
         } else {
-            $lib = 'libssl';
+            $lib = $*VM.platform-library-name('ssl'.IO).Str;
         }
     }
     $lib
@@ -21,7 +21,7 @@ sub gen-lib is export {
             # try to find a bundled .dll
             $lib = Find::Bundled.find('libeay32.dll', 'OpenSSL', :return-original, :keep-filename);
         } else {
-            $lib = 'libssl';
+            $lib =  $*VM.platform-library-name('ssl'.IO).Str;
         }
     }
     $lib
