@@ -19,7 +19,10 @@ has $.net-read;
 has $.net-bio;
 has $.internal-bio;
 
-method new(Bool :$client = False, Int :$version?) {
+# SSLv2 | SSLv3 | TLSv1 | TLSv1.1 | TLSv1.2 | default
+subset ProtocolVersion of Numeric where * == 2| 3| 1| 1.1| 1.2| -1;
+
+method new(Bool :$client = False, ProtocolVersion :$version = -1) {
 
     # make a simple call to ensure libeay32.dll is loaded before ssleay32.dll (on windows)
     #
@@ -31,31 +34,25 @@ method new(Bool :$client = False, Int :$version?) {
     OpenSSL::SSL::SSL_load_error_strings();
 
     my $method;
-    if $version.defined {
-        given $version {
-            when 2 {
-                $method = ($client ?? OpenSSL::Method::SSLv2_client_method() !! OpenSSL::Method::SSLv2_server_method());
-            }
-            when 3 {
-                $method = ($client ?? OpenSSL::Method::SSLv3_client_method() !! OpenSSL::Method::SSLv3_server_method());
-            }
-            when 1 {
-                $method = ($client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method());
-            }
-            when 1.1 {
-                $method = ($client ?? OpenSSL::Method::TLSv1_1_client_method() !! OpenSSL::Method::TLSv1_1_server_method());
-            }
-            when 1.2 {
-                $method = ($client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method());
-            }
-            default {
-                $method = try {$client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method()} || try {$client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method()}  ; 
-            }
+    given $version {
+        when 2 {
+            $method = ($client ?? OpenSSL::Method::SSLv2_client_method() !! OpenSSL::Method::SSLv2_server_method());
         }
-    }
-    else {
-        #$method = $client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method();
-        $method = try {$client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method()} || try {$client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method()}  ;
+        when 3 {
+            $method = ($client ?? OpenSSL::Method::SSLv3_client_method() !! OpenSSL::Method::SSLv3_server_method());
+        }
+        when 1 {
+            $method = ($client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method());
+        }
+        when 1.1 {
+            $method = ($client ?? OpenSSL::Method::TLSv1_1_client_method() !! OpenSSL::Method::TLSv1_1_server_method());
+        }
+        when 1.2 {
+            $method = ($client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method());
+        }
+        default {
+            $method = try {$client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method()} || try {$client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method()}  ; 
+        }
     }
     my $ctx     = OpenSSL::Ctx::SSL_CTX_new( $method );
     my $ssl     = OpenSSL::SSL::SSL_new( $ctx );
