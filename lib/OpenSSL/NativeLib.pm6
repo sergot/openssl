@@ -1,28 +1,13 @@
 unit module OpenSSL::NativeLib;
-use Find::Bundled;
 
 sub ssl-lib is export {
-    state $lib;
-    unless $lib {
-        if $*DISTRO.is-win {
-            # try to find a bundled .dll
-            $lib = Find::Bundled.find('ssleay32.dll', 'OpenSSL', :return-original, :keep-filename);
-        } else {
-            $lib = $*VM.platform-library-name('ssl'.IO).Str;
-        }
-    }
-    $lib
+    state $lib = $*DISTRO.is-win
+        ?? %?RESOURCES<ssleay32.dll>.absolute
+        !! $*VM.platform-library-name('ssl'.IO).Str;
 }
 
 sub gen-lib is export {
-    state $lib;
-    unless $lib {
-        if $*DISTRO.is-win {
-            # try to find a bundled .dll
-            $lib = Find::Bundled.find('libeay32.dll', 'OpenSSL', :return-original, :keep-filename);
-        } else {
-            $lib =  $*VM.platform-library-name('ssl'.IO).Str;
-        }
-    }
-    $lib
+    state $lib = $*DISTRO.is-win
+        ?? %?RESOURCES<libeay32.dll>.absolute
+        !! $*VM.platform-library-name('ssl'.IO).Str;
 }
