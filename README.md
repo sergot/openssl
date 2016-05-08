@@ -1,4 +1,4 @@
-OpenSSL [![Build Status](https://travis-ci.org/sergot/openssl.svg?branch=master)](https://travis-ci.org/sergot/openssl)
+OpenSSL [![Build Status](https://travis-ci.org/sergot/openssl.svg?branch=master)](https://travis-ci.org/sergot/openssl) [![Build status](https://ci.appveyor.com/api/projects/status/ck9w128qd34rylu2/branch/master?svg=true)](https://ci.appveyor.com/project/skinkade/openssl/branch/master)
 =======
 
 OpenSSL bindings for Perl 6
