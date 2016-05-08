@@ -1,10 +1,9 @@
 {
     "name"      : "OpenSSL",
-    "version"   : "0.0.2",
+    "version"   : "0.0.3",
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
-    "depends"   : ["Digest","Find::Bundled"],
-    "build-depends" : ["Shell::Command","panda"],
+    "depends"   : ["Digest"],
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
         "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
@@ -22,5 +21,6 @@
         "OpenSSL::SSL"        : "lib/OpenSSL/SSL.pm6",
         "OpenSSL::X509"       : "lib/OpenSSL/X509.pm6"
     },
-    "source-url"    : "git://github.com/sergot/openssl.git"
+    "source-url"    : "git://github.com/sergot/openssl.git",
+    "resources" : [ "ssleay32.dll", "libeay32.dll" ]
 }
