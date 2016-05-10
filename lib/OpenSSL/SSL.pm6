@@ -4,6 +4,7 @@ use OpenSSL::NativeLib;
 use OpenSSL::Bio;
 use OpenSSL::Method;
 use OpenSSL::Ctx;
+use OpenSSL::Stack;
 
 use NativeCall;
 
@@ -51,3 +52,7 @@ our sub SSL_set_connect_state(SSL) is native(&ssl-lib)                         {
 our sub SSL_set_accept_state(SSL) is native(&ssl-lib)                          { ... }
 
 our sub SSL_set_bio(SSL, OpaquePointer, OpaquePointer) returns int32 is native(&ssl-lib) { ... }
+
+our sub SSL_load_client_CA_file(CArray[uint8]) returns OpenSSL::Stack is native(&ssl-lib)  { ... };
+our sub SSL_get_client_CA_list(SSL) returns OpenSSL::Stack is native(&ssl-lib)             { ... };
+our sub SSL_set_client_CA_list(SSL, OpenSSL::Stack) is native(&ssl-lib)                    { ... };
