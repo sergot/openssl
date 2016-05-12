@@ -4,6 +4,7 @@ use OpenSSL::SSL;
 use OpenSSL::Bio;
 use OpenSSL::Err;
 use OpenSSL::EVP;
+use OpenSSL::X509;
 
 use NativeCall;
 
@@ -18,6 +19,10 @@ has $.net-read;
 
 has $.net-bio;
 has $.internal-bio;
+
+class X::OpenSSL::Exception is Exception {
+    has $.message;
+}
 
 # SSLv2 | SSLv3 | TLSv1 | TLSv1.1 | TLSv1.2 | default
 subset ProtocolVersion of Numeric where * == 2| 3| 1| 1.1| 1.2| -1;
@@ -56,6 +61,7 @@ method new(Bool :$client = False, ProtocolVersion :$version = -1) {
     }
     my $ctx     = OpenSSL::Ctx::SSL_CTX_new( $method );
     my $ssl     = OpenSSL::SSL::SSL_new( $ctx );
+
 
     self.bless(:$ctx, :$ssl, :$client);
 }
@@ -224,6 +230,37 @@ method use-privatekey-file(Str $file) {
     if OpenSSL::Ctx::SSL_CTX_use_PrivateKey_file($!ctx, $file, 1) <= 0 {
         die "Failed to set PrivateKey file";
     }
+}
+
+method use-client-ca-file(Str $file, :$debug is copy) {
+    unless my $ca-stack = OpenSSL::SSL::SSL_load_client_CA_file( CArray[uint8].new( $file.encode.list, 0 ) ) {
+        my $e = OpenSSL::Err::ERR_get_error();
+        die X::OpenSSL::Exception.new( message => "OpenSSL error $e -- " ~ OpenSSL::Err::ERR_error_string( $e, Nil ) );
+    }
+
+    if $debug || %*ENV<OPENSSL_CA_DEBUG> {
+        $debug = $*ERR unless $debug ~~ IO::Handle;
+
+        say $debug: "*** OPENSSL CA LIST -- LOADED ***";
+        OpenSSL::X509::dump_x509_stack($ca-stack, :FH($debug));
+    }
+
+    OpenSSL::SSL::SSL_set_client_CA_list( $!ssl, $ca-stack );
+
+    $ca-stack;
+}
+
+method get-client-ca-list (:$debug is copy) {
+    my $ca-stack = OpenSSL::SSL::SSL_get_client_CA_list( $!ssl );
+
+    if $debug || %*ENV<OPENSSL_CA_DEBUG> {
+        $debug = $*ERR unless $debug ~~ IO::Handle;
+
+        say $debug: "*** OPENSSL CA LIST ***";
+        OpenSSL::X509::dump_x509_stack($ca-stack, :FH($debug));
+    }
+
+    $ca-stack;
 }
 
 method check-private-key {
