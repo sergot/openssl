@@ -26,7 +26,7 @@ multi sub encrypt(Blob $plaintext, :$key, :$iv, :$cipher!) is export {
         die "Key is not {$evp.key_len * 8} bits";
     }
     if $iv.bytes != $evp.iv_len {
-        die "Key is not {$evp.iv_len * 8} bits";
+        die "IV is not {$evp.iv_len * 8} bits";
     }
 
     # way bigger than needed
@@ -75,7 +75,7 @@ multi sub decrypt(Blob $ciphertext, :$key, :$iv, :$cipher!) is export {
         die "Key is not {$evp.key_len * 8} bits";
     }
     if $iv.bytes != $evp.iv_len {
-        die "Key is not {$evp.iv_len * 8} bits";
+        die "IV is not {$evp.iv_len * 8} bits";
     }
 
     # way bigger than needed
