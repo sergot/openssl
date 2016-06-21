@@ -1,6 +1,6 @@
 {
     "name"      : "OpenSSL",
-    "version"   : "0.1.2",
+    "version"   : "0.1.3",
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
     "depends"   : ["Digest"],

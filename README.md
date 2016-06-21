@@ -32,7 +32,7 @@ Public key signing tools
 
 ## OpenSSL::CryptTools
 
-Symmetric encryption tools (currently only AES256 encrypt/decrypt)
+Symmetric encryption tools (currently only AES256/192/128 encrypt/decrypt)
 
     use OpenSSL::CryptTools;
 

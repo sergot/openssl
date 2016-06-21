@@ -1,9 +1,7 @@
 use v6;
 use Test;
 
-use experimental :pack;
-
-plan 6;
+plan 11;
 
 use OpenSSL::CryptTools;
 
@@ -18,10 +16,26 @@ ok $plaintext, 'can decrypt';
 is $plaintext, "asdf".encode, 'decrypt gets correct data';
 
 # AES Test Vector
-my $key = pack("H*", "603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4");
-my $test = pack("H*", "f69f2445df4f9b17ad2b417be66c3710");
-my $iv = pack("H*", "39F23369A9D9BACFA530E26304231461");
+my $key = Blob.new( 0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae, 0xf0, 0x85, 0x7d, 0x77, 0x81, 0x1f, 0x35, 0x2c, 0x07, 0x3b, 0x61, 0x08, 0xd7, 0x2d, 0x98, 0x10, 0xa3, 0x09, 0x14, 0xdf, 0xf4);
+my $test = Blob.new( 0xf6, 0x9f, 0x24, 0x45, 0xdf, 0x4f, 0x9b, 0x17, 0xad, 0x2b, 0x41, 0x7b, 0xe6, 0x6c, 0x37, 0x10);
+my $iv = Blob.new(0x39, 0xF2, 0x33, 0x69, 0xA9, 0xD9, 0xBA, 0xCF, 0xA5, 0x30, 0xE2, 0x63, 0x04, 0x23, 0x14, 0x61,);
 
 $ciphertext = encrypt($test, :aes256, :$iv, :$key);
-my $expected = $ciphertext.unpack("H*").substr(0,32); # remove padding
-ok  "b2eb05e2c39be9fcda6c19078c6a9d1b" eq $expected, "got expected";
+is-deeply $ciphertext[0..^16], (0xb2, 0xeb, 0x05, 0xe2, 0xc3, 0x9b, 0xe9, 0xfc, 0xda, 0x6c, 0x19, 0x07, 0x8c, 0x6a, 0x9d, 0x1b), "got aes256 expected ciphertext";
+$plaintext = decrypt($ciphertext, :aes256, :$iv, :$key);
+is-deeply $plaintext[0..^16], $test[0..^16], 'aes128 encrypt/decrypt roundtrip';
+
+$iv = Blob.new(234,72,142,51,41,124,195,48,173,92,119,85,68,98,83,7);
+$key = Buf.new(153,236,223,14,168,171,126,143,31,34,114,27,15,26,80,70);
+$test = Blob.new(80,68,70,45,84,111,111,108,115,47,116,47,100,97,111,45,100,111,99,46,116);
+
+$ciphertext = encrypt($test, :aes128, :$iv, :$key);
+is-deeply $ciphertext[0..^16], (97,133,236,148,181,60,72,129,145,40,31,27,41,81,165,18), "got aes128 expected ciphertext";
+$plaintext = decrypt($ciphertext, :aes128, :$iv, :$key);
+is-deeply $plaintext[0..^16], $test[0..^16], 'aes128 encrypt/decrypt roundtrip';
+
+$key.reallocate(192 div 8);
+$ciphertext = encrypt($test, :aes192, :$iv, :$key);
+is-deeply $ciphertext[0..^16], (108, 43, 13, 72, 123, 90, 223, 254, 165, 189, 230, 75, 140, 224, 182, 49), "got aes192 expected ciphertext";
+$plaintext = decrypt($ciphertext, :aes192, :$iv, :$key);
+is-deeply $plaintext[0..^16], $test[0..^16], 'aes192 encrypt/decrypt roundtrip';
