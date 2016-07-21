@@ -2,8 +2,7 @@ language: perl6
 perl6:
   - latest
 install:
-  - rakudobrew build-panda
-  - panda installdeps .
+  - perl6 -v
 script:
   - prove -v -e 'perl6 -Ilib' t/
 sudo: false
