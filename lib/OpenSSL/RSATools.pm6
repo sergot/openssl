@@ -3,7 +3,7 @@ use OpenSSL::Bio;
 use OpenSSL::PEM;
 use OpenSSL::X509;
 use OpenSSL::EVP;
-use Digest::SHA;
+use OpenSSL::Digest;
 
 use NativeCall;
 
