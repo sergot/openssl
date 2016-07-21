@@ -1,14 +1,15 @@
 {
     "name"      : "OpenSSL",
-    "version"   : "0.1.3",
+    "version"   : "0.1.4",
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
-    "depends"   : ["Digest"],
+    "depends"   : [],
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
         "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
         "OpenSSL::Cipher"     : "lib/OpenSSL/Cipher.pm6",
         "OpenSSL::CryptTools" : "lib/OpenSSL/CryptTools.pm6",
+        "OpenSSL::Digest"     : "lib/OpenSSL/Digest.pm6",
         "OpenSSL::Ctx"        : "lib/OpenSSL/Ctx.pm6",
         "OpenSSL::Err"        : "lib/OpenSSL/Err.pm6",
         "OpenSSL::EVP"        : "lib/OpenSSL/EVP.pm6",

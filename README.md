@@ -44,3 +44,10 @@ Symmetric encryption tools (currently only AES256/192/128 encrypt/decrypt)
                             :aes256,
                             :iv(("0" x 16).encode),
                             :key(('x' x 32).encode));
+
+## OpenSSL::Digest
+
+Digest Functions (currently only md5/sha1/sha256)
+
+    use OpenSSL::Digest;
+    my Blob $digest = md5("xyz".encode);
