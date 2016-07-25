@@ -198,8 +198,7 @@ multi method write(Blob $b) {
 
 method read(Int $n, Bool :$bin) {
     my int32 $count = $n;
-    my $carray = buf8.new;
-    $carray[$n-1] = 0;
+    my $carray = buf8.new(0 xx $n);
     my $total-read = 0;
     my $buf = buf8.new;
     loop {
