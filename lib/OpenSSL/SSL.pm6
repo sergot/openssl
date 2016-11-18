@@ -37,6 +37,7 @@ class SSL is repr('CStruct') {
 }
 
 our sub SSL_library_init() is native(&ssl-lib)                                 { ... }
+our sub OPENSSL_init_ssl(uint64, OpaquePointer) is native(&ssl-lib)            { ... }
 our sub SSL_load_error_strings() is native(&ssl-lib)                           { ... }
 
 our sub SSL_new(OpenSSL::Ctx::SSL_CTX) returns SSL is native(&ssl-lib)         { ... }
