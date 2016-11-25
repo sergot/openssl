@@ -34,9 +34,15 @@ method new(Bool :$client = False, ProtocolVersion :$version = -1) {
     # if we're using our bundled .dll files, and we try to load ssleay32.dll first, LoadLibrary
     # can't find the required libeay32.dll anywhere in the path, and so fails to load the dll
     OpenSSL::EVP::EVP_aes_128_cbc();
-
-    OpenSSL::SSL::SSL_library_init();
-    OpenSSL::SSL::SSL_load_error_strings();
+    
+    # Provisional support for OpenSSL 1.1
+    try {
+        CATCH {
+            default { OpenSSL::SSL::OPENSSL_init_ssl(0, OpaquePointer); }
+        }
+        OpenSSL::SSL::SSL_library_init();
+        OpenSSL::SSL::SSL_load_error_strings();
+    }
 
     my $method;
     given $version {
