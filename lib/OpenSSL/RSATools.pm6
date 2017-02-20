@@ -26,7 +26,13 @@ class OpenSSL::RSAKey {
         }
         elsif $public-pem {
             my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($public-pem.encode, $public-pem.encode.bytes);
-            my $rsa = OpenSSL::PEM::PEM_read_bio_RSAPublicKey($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
+            my $rsa;
+            if $public-pem ~~ /RSA/ {
+                $rsa = OpenSSL::PEM::PEM_read_bio_RSAPublicKey($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
+            }
+            else {
+                $rsa = OpenSSL::PEM::PEM_read_bio_RSA_PUBKEY($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
+            }
             OpenSSL::Bio::BIO_free($bio-buf);
             die "Unable to read key" unless defined($rsa);
 
