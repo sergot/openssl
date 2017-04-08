@@ -15,7 +15,7 @@ throws-like {
 }, X::OpenSSL::Exception, "Missing cacert.pem file";
 
 # Copied from the Perl 5 "Mozilla-CA-20160104" CPAN distribution
-given $ssl.use-client-ca-file( $*SPEC.catfile( IO::Path.new($*PROGRAM.dirname).abspath, "cacert.pem" ) ) {
+given $ssl.use-client-ca-file( $*SPEC.catfile( IO::Path.new($*PROGRAM.dirname).absolute, "cacert.pem" ) ) {
     isa-ok $_, OpenSSL::Stack, "use-client-ca-file is-a 'OpenSSL::Stack'";
     ok .num > 0, "use-client-ca-list returned >0 entries";
 }
