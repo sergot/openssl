@@ -72,6 +72,12 @@ method new(Bool :$client = False, ProtocolVersion :$version = -1) {
     self.bless(:$ctx, :$ssl, :$client);
 }
 
+method set-server-name(Str $server-name) {
+    explicitly-manage($server-name);
+    OpenSSL::SSL::SSL_ctrl($!ssl, 55, 0, $server-name);
+
+}
+
 method set-fd(int32 $fd) {
     OpenSSL::SSL::SSL_set_fd($!ssl, $fd);
 }
@@ -94,6 +100,10 @@ method set-socket(IO::Socket $s) {
     $!net-bio = $n-ptr[0];
     $!internal-bio = $i-ptr[0];
     OpenSSL::SSL::SSL_set_bio($!ssl, $.internal-bio, $.internal-bio);
+
+    if $s.?host {
+        self.set-server-name($s.host);
+    }
 
     $!net-write = -> $buf {
         $s.write($buf);
