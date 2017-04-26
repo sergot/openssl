@@ -22,7 +22,8 @@
         "OpenSSL::Session"    : "lib/OpenSSL/Session.pm6",
         "OpenSSL::Stack"      : "lib/OpenSSL/Stack.pm6",
         "OpenSSL::SSL"        : "lib/OpenSSL/SSL.pm6",
-        "OpenSSL::X509"       : "lib/OpenSSL/X509.pm6"
+        "OpenSSL::X509"       : "lib/OpenSSL/X509.pm6",
+        "OpenSSL::Digest::MD5": "lib/OpenSSL/Digest/MD5.pm6"
     },
     "source-url"    : "git://github.com/sergot/openssl.git",
     "resources" : [ "ssleay32.dll", "libeay32.dll" ]

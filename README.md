@@ -51,3 +51,16 @@ Digest Functions (currently only md5/sha1/sha256/sha384/sha512)
 
     use OpenSSL::Digest;
     my Blob $digest = md5("xyz".encode);
+
+## OpenSSL::Digest::MD5
+
+OO-Interface supporting incremental digesting
+
+    use OpenSSL::Digest::MD5;
+
+    my $md5 = OpenSSL::Digest::MD5.new; # Create fresh object
+    $md5.add('abc');                    # pass in Str or Blob
+    $md5.add('def');                    # Add some more data
+    my $digest = $md5.hash;             # Blob hash (and reset)
+    $md5.addfile('myfile');             # Read a file
+    my $hexdigest = $md5.hex;           # hex hash  (and reset)
