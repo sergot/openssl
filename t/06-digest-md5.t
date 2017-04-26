@@ -1,0 +1,7 @@
+use Test;
+use OpenSSL::Digest::MD5;
+
+plan 1;
+
+is OpenSSL::Digest::MD5.new.add('abc').hex,
+    '900150983cd24fb0d6963f7d28e17f72', 'hex hash';
