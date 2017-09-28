@@ -4,5 +4,5 @@ perl6:
 install:
   - perl6 -v
 script:
-  - prove -v -e 'perl6 -Ilib' t/
+  - NETWORK_TESTING=1 prove -v -e 'perl6 -I.' t/
 sudo: false

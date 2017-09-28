@@ -3,6 +3,12 @@ use Test;
 
 plan 4;
 
+unless %*ENV<NETWORK_TESTING> {
+    diag "NETWORK_TESTING was not set";
+    skip-rest("NETWORK_TESTING was not set");
+    exit;
+}
+
 check(fetch('google.com', '/'));
 
 sub check($result) {

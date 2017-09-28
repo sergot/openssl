@@ -15,6 +15,7 @@ install:
 build: off
 
 test_script:
-  - prove -v -e "perl6 -Ilib" t/
+  - SET NETWORK_TESTING=1
+  - prove -v -e "perl6 -I." t/
 
 shallow_clone: true
