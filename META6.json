@@ -1,12 +1,13 @@
 {
     "perl"      : "6.*",
     "name"      : "OpenSSL",
-    "version"   : "0.1.15",
+    "version"   : "1.0.0",
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
     "depends"   : [],
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
+        "OpenSSL::Base"       : "lib/OpenSSL/Base.pm6",
         "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
         "OpenSSL::Cipher"     : "lib/OpenSSL/Cipher.pm6",
         "OpenSSL::CryptTools" : "lib/OpenSSL/CryptTools.pm6",

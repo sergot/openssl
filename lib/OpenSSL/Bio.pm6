@@ -37,8 +37,10 @@ class BIO is repr('CStruct') {
     has int32 $.dummy;
 }
 
+our sub BIO_new(BIO_METHOD) returns OpaquePointer is native(&gen-lib) { ... }
 our sub BIO_new_bio_pair(CArray[OpaquePointer], long, CArray[OpaquePointer], long --> int32) is native(&gen-lib) { ... }
 our sub BIO_free(OpaquePointer) is native(&gen-lib) { ... }
 our sub BIO_read(OpaquePointer, Blob, long --> int32) is native(&gen-lib) { ... }
 our sub BIO_write(OpaquePointer, Blob, long --> int32) is native(&gen-lib) { ... }
 our sub BIO_new_mem_buf(Blob, long --> OpaquePointer) is native(&gen-lib) { ... }
+our sub BIO_s_mem() returns BIO_METHOD is native(&gen-lib) { ... }

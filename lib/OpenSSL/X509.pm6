@@ -62,3 +62,8 @@ our sub dump_x509_stack(OpenSSL::Stack $stack, :$FH = $*ERR) {
 
 our sub X509_get_pubkey(OpaquePointer --> OpaquePointer) is native(&gen-lib) { ... }
 our sub X509_free(OpaquePointer) is native(&gen-lib) { ... }
+our sub X509_get_ext_d2i(Pointer, int32, CArray[int32], CArray[int32]) returns OpenSSL::Stack
+    is native(&gen-lib) { ... }
+
+our sub ASN1_STRING_to_UTF8(CArray[CArray[uint8]], Pointer) returns int32
+    is native(&gen-lib) { ... }
