@@ -12,6 +12,12 @@ sub gen-lib is export {
         !! $*VM.platform-library-name('ssl'.IO).Str;
 }
 
+sub crypto-lib is export {
+    state $lib = $*DISTRO.is-win
+        ?? dll-resource('libeay32.dll')
+        !! $*VM.platform-library-name('crypto'.IO).Str;
+}
+
 # Windows only
 # Problem: The dll files in resources/ don't like to be renamed, but CompUnit::Repository::Installation
 # does not provide a mechanism for storing resources without name mangling. Find::Bundled provided

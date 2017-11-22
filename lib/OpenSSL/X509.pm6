@@ -60,5 +60,5 @@ our sub dump_x509_stack(OpenSSL::Stack $stack, :$FH = $*ERR) {
     }
 }
 
-our sub X509_get_pubkey(OpaquePointer --> OpaquePointer) is native(&gen-lib) { ... }
-our sub X509_free(OpaquePointer) is native(&gen-lib) { ... }
+our sub X509_get_pubkey(OpaquePointer --> OpaquePointer) is native(&crypto-lib) { ... }
+our sub X509_free(OpaquePointer) is native(&crypto-lib) { ... }
