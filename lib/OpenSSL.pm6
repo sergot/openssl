@@ -9,7 +9,7 @@ use OpenSSL::X509;
 use NativeCall;
 
 has OpenSSL::Ctx::SSL_CTX $.ctx;
-has OpenSSL::SSL::SSL $.ssl;
+has OpenSSL::Base::SSL $.ssl;
 has $.client;
 
 has $.using-bio = False;
