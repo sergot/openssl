@@ -220,8 +220,11 @@ method read(Int $n, Bool :$bin) {
     loop {
         my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count - $total-read);
 
-        $total-read += $read if $read > 0;
-        $buf ~= $carray.subbuf(0, $read) if $read > 0;
+        if $read > 0 {
+            $buf.reallocate($total-read + $read);
+            $buf.splice($total-read, $read, $carray.subbuf(0, $read));
+            $total-read += $read;
+        }
 
         last if $total-read >= $n;
 
