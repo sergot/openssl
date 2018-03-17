@@ -9,6 +9,13 @@ use OpenSSL::Base;
 
 use NativeCall;
 
+constant SSL_VERIFY_NONE                 = 0x00;
+constant SSL_VERIFY_PEER                 = 0x01;
+constant SSL_VERIFY_FAIL_IF_NO_PEER_CERT = 0x02;
+constant SSL_VERIFY_CLIENT_ONCE          = 0x04;
+constant SSL_VERIFY_POST_HANDSHAKE       = 0x08;
+
+
 our sub SSL_library_init() is native(&ssl-lib)                                 { ... }
 our sub OPENSSL_init_ssl(uint64, OpaquePointer) is native(&ssl-lib)            { ... }
 our sub SSL_load_error_strings() is native(&ssl-lib)                           { ... }
@@ -38,3 +45,8 @@ our sub SSL_get0_alpn_selected(OpenSSL::Base::SSL, CArray[CArray[uint8]], uint32
 
 # long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg)
 our sub SSL_ctrl(OpenSSL::Base::SSL, int32, int64, Str ) returns int64 is native(&ssl-lib) { ... }
+our sub SSL_set_verify(OpenSSL::Base::SSL, int32,
+                       &callback ( int32,
+                                   #OpenSSL::Ctx::X509_STORE_CTX
+                                   Pointer
+                                       --> int32)) is native(&ssl-lib) { ... }

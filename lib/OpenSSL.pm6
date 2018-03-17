@@ -5,6 +5,7 @@ use OpenSSL::Bio;
 use OpenSSL::Err;
 use OpenSSL::EVP;
 use OpenSSL::X509;
+use OpenSSL::X509_Store_Ctx;
 
 use NativeCall;
 
@@ -276,6 +277,10 @@ method get-client-ca-list (:$debug is copy) {
     }
 
     $ca-stack;
+}
+
+method set-verify(Int $mode, &callback) {
+    OpenSSL::SSL::SSL_set_verify($!ssl, $mode, &callback);
 }
 
 method check-private-key {

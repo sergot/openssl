@@ -32,3 +32,8 @@ our sub SSL_CTX_set_alpn_select_cb(SSL_CTX, &callback (
                                    Pointer --> int32),       # arg
                                Pointer)
     is native(&gen-lib) {*}
+our sub SSL_CTX_set_verify(OpenSSL::Ctx::SSL_CTX, int32,
+                           &callback ( int32,
+                                       Pointer # X509_STORE_CTX
+                                       --> int32)
+                          ) is native(&ssl-lib) { ... }
