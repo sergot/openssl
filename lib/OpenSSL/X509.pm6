@@ -67,3 +67,4 @@ our sub X509_get_ext_d2i(Pointer, int32, CArray[int32], CArray[int32]) returns O
 
 our sub ASN1_STRING_to_UTF8(CArray[CArray[uint8]], Pointer) returns int32
     is native(&crypto-lib) { ... }
+our sub X509_get_pathlen(Pointer) returns int64 is native(&crypto-lib) { ... }
