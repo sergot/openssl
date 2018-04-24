@@ -61,8 +61,11 @@ method new(Bool :$client = False, ProtocolVersion :$version = -1) {
         when 1.2 {
             $method = ($client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method());
         }
+        # No explicit version means: negotiate.
+        # In OpenSSL 1.1.0, TLS_method() replaces SSLv23_method()
         default {
-            $method = try {$client ?? OpenSSL::Method::TLSv1_2_client_method() !! OpenSSL::Method::TLSv1_2_server_method()} || try {$client ?? OpenSSL::Method::TLSv1_client_method() !! OpenSSL::Method::TLSv1_server_method()}  ; 
+            $method = try {$client ?? OpenSSL::Method::TLS_client_method()    !! OpenSSL::Method::TLS_server_method()} \
+                   || try {$client ?? OpenSSL::Method::SSLv23_client_method() !! OpenSSL::Method::SSLv23_server_method()};
         }
     }
     my $ctx     = OpenSSL::Ctx::SSL_CTX_new( $method );
@@ -334,6 +337,7 @@ A module which provides OpenSSL bindings, making us able to set up a TLS/SSL con
     method new(Bool :$client = False, Int :$version?)
 
 A constructor. Initializes OpenSSL library, sets method and context.
+If $version is not specified, the highest possible version is negotiated.
 
 =head2 method set-fd
 
