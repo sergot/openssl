@@ -59,4 +59,4 @@ our sub SSL_get_client_CA_list(SSL) returns OpenSSL::Stack is native(&ssl-lib)  
 our sub SSL_set_client_CA_list(SSL, OpenSSL::Stack) is native(&ssl-lib)                    { ... };
 
 # long SSL_ctrl(SSL *ssl, int cmd, long larg, void *parg)
-our sub SSL_ctrl(SSL, int32, int64, Str ) returns int64 is native(&ssl-lib) { ... }
+our sub SSL_ctrl(SSL, int32, long, Str ) returns long is native(&ssl-lib) { ... }
