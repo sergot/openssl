@@ -2,6 +2,7 @@ unit module OpenSSL::Stack;
 
 use NativeCall;
 use OpenSSL::NativeLib;
+use OpenSSL::Version;
 
 class OpenSSL::Stack is repr('CStruct') {
     has int32 $.num;
@@ -11,6 +12,11 @@ class OpenSSL::Stack is repr('CStruct') {
     has Pointer $.comp;
 }
 
-our sub sk_num(OpenSSL::Stack) returns int32 is native(&gen-lib) { ... }
-our sub sk_value(OpenSSL::Stack, int32) returns Pointer is native(&gen-lib) { ... }
-our sub sk_free(OpenSSL::Stack) is native(&gen-lib) { ... }
+my sub real_symbol(Str $sym) returns Str {
+    state Int $v = OpenSSL::Version::version_num();
+    return $v >= 0x10100000 ?? "OPENSSL_$sym" !! $sym;
+}
+
+our sub sk_num(OpenSSL::Stack) returns int32 is native(&gen-lib) is symbol(real_symbol('sk_num')) { ... }
+our sub sk_value(OpenSSL::Stack, int32) returns Pointer is native(&gen-lib) is symbol(real_symbol('sk_value')) { ... }
+our sub sk_free(OpenSSL::Stack) is native(&gen-lib) is symbol(real_symbol('sk_free')) { ... }
