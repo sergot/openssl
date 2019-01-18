@@ -38,6 +38,11 @@ sub dll-resource($resource-name) {
 
     mkdir $content_store unless $content_store.e;
     copy($resource, $content_file);
+    
+    END {
+        $content_file.unlink;
+        $content_store.rmdir;
+    }
 
     $content_file;
 }
