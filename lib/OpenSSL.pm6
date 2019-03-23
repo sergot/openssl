@@ -224,8 +224,7 @@ method read(Int $n, Bool :$bin) {
         my $read = OpenSSL::SSL::SSL_read($!ssl, $carray, $count - $total-read);
 
         if $read > 0 {
-            $buf.reallocate($total-read + $read);
-            $buf.splice($total-read, $read, $carray.subbuf(0, $read));
+            $buf.append($carray.subbuf(0, $read));
             $total-read += $read;
         }
 
