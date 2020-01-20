@@ -12,7 +12,8 @@ $ssl = OpenSSL.new(:client);
 # On OpenSSL 1.1.0, we have TLS_client_method which returns the special
 # value 0x10000. Older OpenSSL use SSLv23_client_method() whose .version
 # is equal to the highest one available.
-   try { OpenSSL::Method::TLS_client_method()     } ?? is $ssl.ctx.method.version, 0x10000, 'new 3/3'
+# On MacOS, LibreSSL TLS_client_method returns 0x00303
+   try { OpenSSL::Method::TLS_client_method()     } ?? is $ssl.ctx.method.version, 0x10000 | 0x00303, 'new 3/3'
 !! try { OpenSSL::Method::TLSv1_2_client_method() } ?? is $ssl.ctx.method.version, 0x00303, 'new 3/3'
 !! try { OpenSSL::Method::TLSv1_1_client_method() } ?? is $ssl.ctx.method.version, 0x00302, 'new 3/3'
 !! try { OpenSSL::Method::TLSv1_client_method()   } ?? is $ssl.ctx.method.version, 0x00301, 'new 3/3'
