@@ -1,0 +1,5 @@
+package-install %(
+  alpine => qqw{make libressl-dev},
+  centos => qqw{openssl openssl-devel},
+  debian => qqw{make libssl-dev},
+);
