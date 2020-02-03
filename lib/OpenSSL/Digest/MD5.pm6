@@ -8,9 +8,9 @@ class OpenSSL::Digest::MD5
 {
     has $!context;
 
-    sub MD5_Init(Blob)                 returns int32 is native(&gen-lib) { * }
-    sub MD5_Update(Blob, Blob, size_t) returns int32 is native(&gen-lib) { * }
-    sub MD5_Final(Blob, Blob)          returns int32 is native(&gen-lib) { * }
+    sub MD5_Init(Blob)                 returns int32 is native(gen-lib) { * }
+    sub MD5_Update(Blob, Blob, size_t) returns int32 is native(gen-lib) { * }
+    sub MD5_Final(Blob, Blob)          returns int32 is native(gen-lib) { * }
 
     submethod BUILD() {
         $!context = buf8.allocate(MD5-CTX-SIZE);

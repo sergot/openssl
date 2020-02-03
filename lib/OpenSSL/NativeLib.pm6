@@ -1,21 +1,61 @@
 unit module OpenSSL::NativeLib;
 
+use NativeCall;
+
+my $version;
+
 sub ssl-lib is export {
-    state $lib = $*DISTRO.is-win
+    state @lib = $*DISTRO.is-win
         ?? dll-resource('ssleay32.dll')
-        !! $*VM.platform-library-name('ssl'.IO).Str;
+        !! ('ssl', version)
 }
 
-sub gen-lib is export {
-    state $lib = $*DISTRO.is-win
+sub gen-lib-unversioned() {
+    $*DISTRO.is-win
         ?? dll-resource('libeay32.dll')
-        !! $*VM.platform-library-name('ssl'.IO).Str;
+        !! 'ssl'
+}
+
+sub gen-lib-version($v) {
+    @ = $*DISTRO.is-win
+        ?? dll-resource('libeay32.dll')
+        !! ('ssl', $v)
+}
+
+sub gen-lib() is export {
+    state @lib = $*DISTRO.is-win
+        ?? dll-resource('libeay32.dll')
+        !! ('ssl', version)
 }
 
 sub crypto-lib is export {
-    state $lib = $*DISTRO.is-win
+    state @lib = $*DISTRO.is-win
         ?? dll-resource('libeay32.dll')
-        !! $*VM.platform-library-name('crypto'.IO).Str;
+        !! ('crypto', version)
+}
+
+sub version() {
+    unless defined $version {
+        for (v1.1, v1.0, v1.0.0) -> $v {
+            try {
+                my sub EVP_aes_128_cbc( --> Pointer) { };
+                trait_mod:<is>(&EVP_aes_128_cbc, :native(gen-lib-version($v)));
+                EVP_aes_128_cbc();
+                $version = $v;
+            }
+            last if $version;
+        }
+
+        try {
+            my sub EVP_aes_128_cbc( --> Pointer) { };
+            trait_mod:<is>(&EVP_aes_128_cbc, :native(gen-lib-unversioned()));
+            EVP_aes_128_cbc();
+            $version = '';
+        }
+
+        die "Did not find {$*VM.platform-library-name('ssl'.IO)}" unless defined $version;
+    }
+    $version
 }
 
 # Windows only
