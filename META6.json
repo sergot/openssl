@@ -1,11 +1,20 @@
 {
+    "meta-version": 1,
     "perl"      : "6.*",
     "name"      : "OpenSSL",
     "version"   : "0.1.23",
     "author"    : "github:sergot",
     "license"   : "MIT",
     "description"   : "OpenSSL bindings",
-    "depends"   : [],
+    "depends"   : {
+        "by-kernel.name": {
+            "win32": ["ssleay32", "libeay32"],
+            "": [
+                {"any": [{"name":"ssl", "from": "native", "ver": "1.1"}, {"name":"ssl", "from": "native", "ver": "1.0"}]},
+                {"any": [{"name":"crypto", "from": "native", "ver": "1.1"}, {"name":"crypto", "from": "native", "ver": "1.0"}]}
+            ]
+        }
+    },
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
         "OpenSSL::Bio"        : "lib/OpenSSL/Bio.pm6",
