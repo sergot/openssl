@@ -3,6 +3,7 @@
     "name"      : "OpenSSL",
     "version"   : "0.1.23",
     "author"    : "github:sergot",
+    "license"   : "MIT",
     "description"   : "OpenSSL bindings",
     "depends"   : [],
     "provides" : {
