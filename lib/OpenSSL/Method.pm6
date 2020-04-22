@@ -4,6 +4,12 @@ use OpenSSL::NativeLib;
 use NativeCall;
 
 class SSL_METHOD is repr('CStruct') {
+    # This field is not present in LibreSSL implementation,
+    # more so this structure is not really meant for introspection.
+    # But for a CStruct we must provide at least one attribute,
+    # so this one is it.
+    # When used with OpenSSL implementation, it returns some values,
+    # otherwise it returns garbage.
     has int32 $.version;
 }
 
