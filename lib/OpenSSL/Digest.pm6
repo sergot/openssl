@@ -9,11 +9,11 @@ our constant SHA256_DIGEST_LENGTH = 32;
 our constant SHA384_DIGEST_LENGTH = 48;
 our constant SHA512_DIGEST_LENGTH = 64;
 
-sub MD5( Blob, size_t, Blob ) is native(&gen-lib)    { ... }
-sub SHA1( Blob, size_t, Blob ) is native(&gen-lib)   { ... }
-sub SHA256( Blob, size_t, Blob ) is native(&gen-lib) { ... }
-sub SHA384( Blob, size_t, Blob ) is native(&gen-lib) { ... }
-sub SHA512( Blob, size_t, Blob ) is native(&gen-lib) { ... }
+sub MD5( Blob, size_t, Blob ) is native(gen-lib)    { ... }
+sub SHA1( Blob, size_t, Blob ) is native(gen-lib)   { ... }
+sub SHA256( Blob, size_t, Blob ) is native(gen-lib) { ... }
+sub SHA384( Blob, size_t, Blob ) is native(gen-lib) { ... }
+sub SHA512( Blob, size_t, Blob ) is native(gen-lib) { ... }
 
 sub md5(Blob $msg) is export {
      my $digest = buf8.allocate(MD5_DIGEST_LENGTH);
