@@ -18,6 +18,7 @@ build: off
 
 test_script:
   - SET NETWORK_TESTING=1
+  - perl6 -I. -e "require(q[Build.pm6]); ::(q[Build]).new.build(q[.])"
   - prove -v -e "perl6 -I." t/
 
 shallow_clone: true

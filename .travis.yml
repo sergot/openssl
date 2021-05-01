@@ -3,6 +3,8 @@ perl6:
   - latest
 install:
   - perl6 -v
+  - rakudobrew build-zef
 script:
+  - zef build .
   - NETWORK_TESTING=1 prove -v -e 'perl6 -I.' t/
 sudo: false
