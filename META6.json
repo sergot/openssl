@@ -27,5 +27,5 @@
         "OpenSSL::Version"    : "lib/OpenSSL/Version.pm6"
     },
     "source-url"    : "git://github.com/sergot/openssl.git",
-    "resources" : [ "ssleay32.dll", "libeay32.dll" ]
+    "resources" : [ "ssleay32.dll", "libeay32.dll", "libraries.json" ]
 }
