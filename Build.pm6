@@ -7,7 +7,7 @@ method build($cwd --> Bool) {
     if %*ENV<OPENSSL_PREFIX>:exists {
         $prefix = %*ENV<OPENSSL_PREFIX>;
     } elsif !$*DISTRO.is-win {
-        my $proc = run "brew", "--prefix", "openssl", :out, :!err;
+        my $proc = run "brew", "--prefix", "--installed", "openssl", :out, :!err;
         if ?$proc {
             $prefix = $proc.out.slurp(:close).chomp;
         }
