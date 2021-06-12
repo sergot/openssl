@@ -15,7 +15,7 @@ class OpenSSL::Stack is repr('CStruct') {
 my sub real_symbol(Str $sym) returns Str {
     state Int $v = OpenSSL::Version::version_num();
     state Bool $is_libressl = OpenSSL::Version::version().contains('LibreSSL');
-    return $v >= 0x10100000 && !$is_libressl ?? "OPENSSL_$sym" !! $sym;
+    return $is_libressl || 0 < $v < 0x10100000 ?? $sym !! "OPENSSL_$sym";
 }
 
 our sub sk_num(OpenSSL::Stack) returns int32 is native(&gen-lib) is symbol(real_symbol('sk_num')) { ... }
