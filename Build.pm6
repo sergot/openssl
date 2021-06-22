@@ -1,3 +1,6 @@
+use PathTools;
+use JSON::Fast;
+
 unit class Build;
 
 method build($cwd --> Bool) {
@@ -20,7 +23,15 @@ method build($cwd --> Bool) {
         ;
     }
 
-    my $json = Rakudo::Internals::JSON.to-json: %libraries, :pretty, :sorted-keys;
+    my $json = to-json(%libraries, :pretty, :sorted-keys);
     "resources/libraries.json".IO.spurt: $json;
+
+    # DO NOT COPY THIS SOLUTION
+    # Delete precomp files when building in case the openssl libs have since been updated
+    # (ideally this type of stale precomp would get picked up by raku)
+    # see: https://github.com/sergot/openssl/issues/82#issuecomment-864523511
+    try rm($cwd.IO.child('.precomp').absolute, :r, :f, :d);
+    try rm($cwd.IO.child('lib/.precomp').absolute, :r, :f, :d);
+
     return True;
 }
