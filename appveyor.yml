@@ -13,12 +13,14 @@ install:
     - SET PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\bin;%PATH%
     - SET PATH=%APPVEYOR_BUILD_FOLDER%\..\rakudo\install\share\perl6\site\bin;%PATH%
     - cd %APPVEYOR_BUILD_FOLDER%
+    - git clone https://github.com/ugexe/zef %APPVEYOR_BUILD_FOLDER%\..\zef
+    - raku -I %APPVEYOR_BUILD_FOLDER%\..\zef %APPVEYOR_BUILD_FOLDER%\..\zef\bin\zef --deps-only install .
+    - raku -I %APPVEYOR_BUILD_FOLDER%\..\zef %APPVEYOR_BUILD_FOLDER%\..\zef\bin\zef build .
 
 build: off
 
 test_script:
   - SET NETWORK_TESTING=1
-  - perl6 -I. -e "require(q[Build.pm6]); ::(q[Build]).new.build(q[.])"
-  - prove -v -e "perl6 -I." t/
+  - prove -v -e "raku -I." t/
 
 shallow_clone: true
