@@ -1,5 +1,4 @@
 use PathTools;
-use JSON::Fast;
 
 unit class Build;
 
@@ -23,7 +22,7 @@ method build($cwd --> Bool) {
         ;
     }
 
-    my $json = to-json(%libraries, :pretty, :sorted-keys);
+    my $json = Rakudo::Internals::JSON.to-json: %libraries, :pretty, :sorted-keys;
     "resources/libraries.json".IO.spurt: $json;
 
     # DO NOT COPY THIS SOLUTION
