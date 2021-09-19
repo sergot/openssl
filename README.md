@@ -2,7 +2,7 @@ OpenSSL [![Build Status](https://travis-ci.org/sergot/openssl.svg?branch=master)
 
 =======
 
-OpenSSL bindings for Perl 6
+OpenSSL bindings for Raku
 
 ## OpenSSL
 
