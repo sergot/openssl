@@ -3,6 +3,11 @@ unit module OpenSSL::Bio;
 use OpenSSL::NativeLib;
 use NativeCall;
 
+class BIO_METHOD is repr('CStruct') {
+    has int32 $.type;
+    has Str $.name;
+}
+
 class BIO is repr('CPointer') {
 }
 
