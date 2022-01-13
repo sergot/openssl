@@ -17,7 +17,10 @@ class OpenSSL::RSAKey {
 
     method new(:$private-pem, :$public-pem, :$x509-pem) {
         if $private-pem {
-            my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($private-pem.encode, $private-pem.encode.bytes);
+            # `$bio-buf` contains a C pointer to `$private-pem-buf`. So `$private-pem-buf` needs to stay alive as long
+            # as `$bio-buf` does.
+            my $private-pem-buf = $private-pem.encode;
+            my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($private-pem-buf, $private-pem-buf.bytes);
             my $rsa = OpenSSL::PEM::PEM_read_bio_RSAPrivateKey($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
             OpenSSL::Bio::BIO_free($bio-buf);
             die "Unable to read key" unless defined($rsa);
@@ -25,7 +28,10 @@ class OpenSSL::RSAKey {
             return self.bless(:$rsa, :private(True));
         }
         elsif $public-pem {
-            my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($public-pem.encode, $public-pem.encode.bytes);
+            # `$bio-buf` contains a C pointer to `$public-pem-buf`. So `$public-pem-buf` needs to stay alive as long
+            # as `$bio-buf` does.
+            my $public-pem-buf = $public-pem.encode;
+            my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($public-pem-buf, $public-pem-buf.bytes);
             my $rsa;
             if $public-pem ~~ /RSA/ {
                 $rsa = OpenSSL::PEM::PEM_read_bio_RSAPublicKey($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
@@ -39,7 +45,10 @@ class OpenSSL::RSAKey {
             return self.bless(:$rsa, :private(False));
         }
         elsif $x509-pem {
-            my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($x509-pem.encode, $x509-pem.encode.bytes);
+            # `$bio-buf` contains a C pointer to `$x509-pem-buf`. So `$x509-pem-buf` needs to stay alive as long
+            # as `$bio-buf` does.
+            my $x509-pem-buf = $x509-pem.encode;
+            my $bio-buf = OpenSSL::Bio::BIO_new_mem_buf($x509-pem-buf, $x509-pem-buf.bytes);
 
             my $x509 = OpenSSL::PEM::PEM_read_bio_X509($bio-buf, OpaquePointer, OpaquePointer, OpaquePointer);
             OpenSSL::Bio::BIO_free($bio-buf);
