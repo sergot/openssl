@@ -27,6 +27,6 @@
         "OpenSSL::Digest::MD5": "lib/OpenSSL/Digest/MD5.pm6",
         "OpenSSL::Version"    : "lib/OpenSSL/Version.pm6"
     },
-    "source-url"    : "git://github.com/sergot/openssl.git",
+    "source-url"    : "https://github.com/sergot/openssl.git",
     "resources" : [ "ssleay32.dll", "libeay32.dll", "libraries.json" ]
 }
