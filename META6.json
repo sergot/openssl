@@ -4,7 +4,7 @@
     "version"   : "0.1.29",
     "author"    : "github:sergot",
     "description"   : "OpenSSL bindings",
-    "build-depends" : ["PathTools"],
+    "build-depends" : ["PathTools","JSON::Fast"],
     "depends"   : [],
     "provides" : {
         "OpenSSL"             : "lib/OpenSSL.pm6",
