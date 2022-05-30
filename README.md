@@ -1,4 +1,4 @@
-OpenSSL [![Build Status](https://travis-ci.org/sergot/openssl.svg?branch=master)](https://travis-ci.org/sergot/openssl) [![Build status](https://ci.appveyor.com/api/projects/status/aix7xu5lpfs20ahw/branch/master?svg=true)](https://ci.appveyor.com/project/sergot/openssl/branch/master)
+OpenSSL [![test](https://github.com/sergot/openssl/actions/workflows/test.yml/badge.svg)](https://github.com/sergot/openssl/actions/workflows/test.yml) [![Build status](https://ci.appveyor.com/api/projects/status/aix7xu5lpfs20ahw/branch/master?svg=true)](https://ci.appveyor.com/project/sergot/openssl/branch/master)
 
 =======
 
