@@ -34,4 +34,4 @@ jobs:
       - name: Install App::Prove6
         run: zef install --/test App::Prove6
       - name: Run Tests
-        run: perl6 -I. -e "require(q[Build.rakumod]); ::(q[Build]).new.build(q[.])" && prove6 -I. t
+        run: raku -I. -e "require(q[Build.rakumod]); ::(q[Build]).new.build(q[.])" && prove6 -I. t
