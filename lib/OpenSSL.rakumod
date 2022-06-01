@@ -345,7 +345,7 @@ If $version is not specified, the highest possible version is negotiated.
 Assings connection's file descriptor (file handle) $fd to the SSL object.
 
 To get the $fd we should use C to set up the connection. (See L<NativeCall>)
-I hope we will be able to use Perl 6's IO::Socket module instead of
+I hope we will be able to use Raku's IO::Socket module instead of
 connecting through C soon-ish.
 
 =head2 method set-connect-state

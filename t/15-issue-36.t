@@ -1,4 +1,4 @@
-#!/usr/bin/env perl6
+#!/usr/bin/env raku
 
 use v6.c;
 use OpenSSL;
@@ -23,4 +23,3 @@ ok $ssl.read(1024).chars, "and got some data back";
 
 
 done-testing;
-# vim: expandtab shiftwidth=4 ft=perl6
