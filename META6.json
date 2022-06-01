@@ -1,10 +1,11 @@
 {
-    "author": "github:sergot",
+    "author": "Filip Sergot",
     "description": "OpenSSL bindings",
     "build-depends": [
         "PathTools", "JSON::Fast"
     ],
     "depends": [],
+    "license": "MIT",
     "name": "OpenSSL",
     "perl": "6.*",
     "provides": {
