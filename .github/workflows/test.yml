@@ -35,3 +35,8 @@ jobs:
         run: zef build .
       - name: Stage, Test, and Installation
         run: zef install . --debug
+      - name: Ensure dll rename hack works
+        if: runner.os == 'Windows'
+        run: |
+          Remove-Item -Path $env:TEMP\* -Recurse -Force -ErrorAction Ignore
+          raku ${{ github.workspace }}/t/06-digest-md5.t
