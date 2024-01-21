@@ -31,7 +31,7 @@ jobs:
         run: brew install openssl
       - name: Install Dependencies
         run: zef install --/test --test-depends --deps-only .
-      - name: Install App::Prove6
-        run: zef install --/test App::Prove6
-      - name: Run Tests
-        run: raku -I. -e "require(q[Build.rakumod]); ::(q[Build]).new.build(q[.])" && prove6 -I. t
+      - name: Build
+        run: zef build .
+      - name: Stage, Test, and Installation
+        run: zef install . --debug
