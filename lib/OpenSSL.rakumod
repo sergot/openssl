@@ -290,18 +290,26 @@ method check-private-key {
 }
 
 method shutdown {
-    OpenSSL::SSL::SSL_shutdown($.ssl);
+    with $!ssl {
+        OpenSSL::SSL::SSL_shutdown($!ssl);
+    }
 }
 
 method ctx-free {
-    OpenSSL::Ctx::SSL_CTX_free($!ctx);
+    with $!ctx {
+        OpenSSL::Ctx::SSL_CTX_free($!ctx);
+        $!ctx = Nil;
+    }
 }
 
 method ssl-free {
-    OpenSSL::SSL::SSL_free($!ssl);
-    if $.using-bio {
-        # $.internal-bio is freed by the SSL_free call
-        OpenSSL::Bio::BIO_free($.net-bio);
+    with $!ssl {
+        OpenSSL::SSL::SSL_free($!ssl);
+        if $.using-bio {
+            # $.internal-bio is freed by the SSL_free call
+            OpenSSL::Bio::BIO_free($.net-bio);
+        }
+        $!ssl = Nil;
     }
 }
 
